@@ -412,35 +412,25 @@ void CCommandProcessorFragment_SDL::Cmd_Swap(const CCommandBuffer::SCommand_Swap
 
 void CCommandProcessorFragment_SDL::Cmd_VideoModes(const CCommandBuffer::SCommand_VideoModes *pCommand)
 {
-	// TODO: fix this code on osx or windows
-	SDL_Rect **ppModes = SDL_ListModes(NULL, SDL_OPENGL|SDL_GL_DOUBLEBUFFER|SDL_FULLSCREEN);
-	if(ppModes == NULL)
+	SDL_DisplayMode mode;
+	int maxModes = SDL_GetNumDisplayModes(0),
+	numModes = 0;
+	for(int i = 0; i < maxModes; i++)
 	{
-		// no modes
-		*pCommand->m_pNumModes = 0;
-	}
-	else if(ppModes == (SDL_Rect**)-1)
-	{
-		// no modes
-		*pCommand->m_pNumModes = 0;
-	}
-	else
-	{
-		int NumModes = 0;
-		for(int i = 0; ppModes[i]; ++i)
+		if(SDL_GetDisplayMode(0, i, &mode) < 0)
 		{
-			if(NumModes == pCommand->m_MaxModes)
-				break;
-			pCommand->m_pModes[NumModes].m_Width = ppModes[i]->w;
-			pCommand->m_pModes[NumModes].m_Height = ppModes[i]->h;
-			pCommand->m_pModes[NumModes].m_Red = 8;
-			pCommand->m_pModes[NumModes].m_Green = 8;
-			pCommand->m_pModes[NumModes].m_Blue = 8;
-			NumModes++;
+			dbg_msg("gfx", "unable to get display mode: %s", SDL_GetError());
+			continue;
 		}
 
-		*pCommand->m_pNumModes = NumModes;
+		pCommand->m_pModes[i].m_Width = mode.w;
+		pCommand->m_pModes[i].m_Height = mode.h;
+		pCommand->m_pModes[i].m_Red = 8;
+		pCommand->m_pModes[i].m_Green = 8;
+		pCommand->m_pModes[i].m_Blue = 8;
+		numModes++;
 	}
+	*pCommand->m_pNumModes = numModes;
 }
 
 CCommandProcessorFragment_SDL::CCommandProcessorFragment_SDL()
