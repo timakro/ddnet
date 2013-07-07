@@ -603,12 +603,12 @@ int CGraphicsBackend_SDL_OpenGL::MemoryUsage() const
 
 void CGraphicsBackend_SDL_OpenGL::Minimize()
 {
-	SDL_WM_IconifyWindow();
+	SDL_MinimizeWindow(m_pWindow);
 }
 
 void CGraphicsBackend_SDL_OpenGL::Maximize()
 {
-	// TODO: SDL
+	SDL_MaximizeWindow(m_pWindow);
 }
 
 void CGraphicsBackend_SDL_OpenGL::GrabWindow(bool grab)
