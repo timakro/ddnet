@@ -62,7 +62,11 @@ void CInput::MouseRelative(float *x, float *y)
 		if(m_InputGrabbed)
 		{
 			SDL_GetMouseState(&nx,&ny);
+<<<<<<< HEAD
 			SDL_WarpMouse(Graphics()->ScreenWidth()/2,Graphics()->ScreenHeight()/2);
+=======
+			m_pGraphics->WarpMouse( Graphics()->ScreenWidth()/2,Graphics()->ScreenHeight()/2);
+>>>>>>> more sdl2 fixes
 			nx -= Graphics()->ScreenWidth()/2; ny -= Graphics()->ScreenHeight()/2;
 		}
 	}
@@ -76,7 +80,11 @@ void CInput::MouseModeAbsolute()
 	SDL_ShowCursor(1);
 	m_InputGrabbed = 0;
 	if(g_Config.m_InpGrab)
+<<<<<<< HEAD
 		SDL_WM_GrabInput(SDL_GRAB_OFF);
+=======
+		m_pGraphics->GrabWindow(false);
+>>>>>>> more sdl2 fixes
 }
 
 void CInput::MouseModeRelative()
@@ -84,7 +92,7 @@ void CInput::MouseModeRelative()
 	SDL_ShowCursor(0);
 	m_InputGrabbed = 1;
 	if(g_Config.m_InpGrab)
-		SDL_WM_GrabInput(SDL_GRAB_ON);
+		m_pGraphics->GrabWindow(true);
 }
 
 int CInput::MouseDoubleClick()
@@ -128,7 +136,7 @@ int CInput::Update()
 
 	{
 		int i;
-		Uint8 *pState = SDL_GetKeyState(&i);
+		Uint8 *pState = SDL_GetKeyboardState(&i);
 		if(i >= KEY_LAST)
 			i = KEY_LAST-1;
 		mem_copy(m_aInputState[m_InputCurrent], pState, i);
@@ -182,12 +190,15 @@ int CInput::Update()
 					if(Event.button.button == SDL_BUTTON_LEFT) Key = KEY_MOUSE_1; // ignore_convention
 					if(Event.button.button == SDL_BUTTON_RIGHT) Key = KEY_MOUSE_2; // ignore_convention
 					if(Event.button.button == SDL_BUTTON_MIDDLE) Key = KEY_MOUSE_3; // ignore_convention
-					if(Event.button.button == SDL_BUTTON_WHEELUP) Key = KEY_MOUSE_WHEEL_UP; // ignore_convention
-					if(Event.button.button == SDL_BUTTON_WHEELDOWN) Key = KEY_MOUSE_WHEEL_DOWN; // ignore_convention
 					if(Event.button.button == 6) Key = KEY_MOUSE_6; // ignore_convention
 					if(Event.button.button == 7) Key = KEY_MOUSE_7; // ignore_convention
 					if(Event.button.button == 8) Key = KEY_MOUSE_8; // ignore_convention
 					if(Event.button.button == 9) Key = KEY_MOUSE_9; // ignore_convention
+					break;
+
+				case SDL_MOUSEWHEEL:
+					if(Event.wheel.y > 0) Key = KEY_MOUSE_WHEEL_UP; // ignore_convention
+					if(Event.wheel.y < 0) Key = KEY_MOUSE_WHEEL_DOWN; // ignore_convention
 					break;
 
 				// other messages
