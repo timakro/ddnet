@@ -56,7 +56,7 @@
 	#include <windows.h>
 #endif
 
-#include "SDL.h"
+#include <SDL.h>
 #ifdef main
 #undef main
 #endif
@@ -1848,6 +1848,7 @@ void CClient::Run()
 		atexit(SDL_Quit); // ignore_convention
 	}
 
+	m_MenuStartTime = time_get();
 	// init graphics
 	{
 		if(g_Config.m_GfxThreaded)
