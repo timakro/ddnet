@@ -46,8 +46,7 @@ CInput::CInput()
 void CInput::Init()
 {
 	m_pGraphics = Kernel()->RequestInterface<IEngineGraphics>();
-	SDL_EnableUNICODE(1);
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	SDL_StartTextInput();
 }
 
 void CInput::MouseRelative(float *x, float *y)
@@ -62,11 +61,7 @@ void CInput::MouseRelative(float *x, float *y)
 		if(m_InputGrabbed)
 		{
 			SDL_GetMouseState(&nx,&ny);
-<<<<<<< HEAD
-			SDL_WarpMouse(Graphics()->ScreenWidth()/2,Graphics()->ScreenHeight()/2);
-=======
 			m_pGraphics->WarpMouse( Graphics()->ScreenWidth()/2,Graphics()->ScreenHeight()/2);
->>>>>>> more sdl2 fixes
 			nx -= Graphics()->ScreenWidth()/2; ny -= Graphics()->ScreenHeight()/2;
 		}
 	}
@@ -80,11 +75,7 @@ void CInput::MouseModeAbsolute()
 	SDL_ShowCursor(1);
 	m_InputGrabbed = 0;
 	if(g_Config.m_InpGrab)
-<<<<<<< HEAD
-		SDL_WM_GrabInput(SDL_GRAB_OFF);
-=======
 		m_pGraphics->GrabWindow(false);
->>>>>>> more sdl2 fixes
 }
 
 void CInput::MouseModeRelative()
@@ -163,11 +154,17 @@ int CInput::Update()
 			int Action = IInput::FLAG_PRESS;
 			switch (Event.type)
 			{
+				case SDL_TEXTINPUT:
+				{
+					int TextLength, i;
+					TextLength = strlen(Event.text.text);
+					for(i = 0; i < TextLength; i++)
+					{
+						AddEvent(Event.text.text[i], 0, 0);
+					}
+				}
 				// handle keys
 				case SDL_KEYDOWN:
-					if(Event.key.keysym.unicode < 0xE000 || Event.key.keysym.unicode > 0xF8FF)	// ignore_convention
-						AddEvent(Event.key.keysym.unicode, 0, 0); // ignore_convention
-
 					if(Event.key.keysym.sym & SDLK_SCANCODE_MASK)
 						Key = Event.key.keysym.sym ^ SDLK_SCANCODE_MASK;
 					else
