@@ -1959,13 +1959,17 @@ void CClient::Run()
 		// release focus
 		if(!m_pGraphics->WindowActive())
 		{
-//			if(m_WindowMustRefocus == 0)
-//				Input()->MouseModeAbsolute();
+			if(m_WindowMustRefocus == 0)
+			{
+				m_MouseModes = Input()->GetMouseModes();
+				Input()->SetMouseModes(0);
+			}
 			m_WindowMustRefocus = 1;
 		}
 		else if (g_Config.m_DbgFocus && Input()->KeyPressed(KEY_ESCAPE))
 		{
-//			Input()->MouseModeAbsolute();
+			m_MouseModes = Input()->GetMouseModes();
+			Input()->SetMouseModes(0);
 			m_WindowMustRefocus = 1;
 		}
 
@@ -1974,13 +1978,14 @@ void CClient::Run()
 		{
 			if(m_WindowMustRefocus < 3)
 			{
-//				Input()->MouseModeAbsolute();
+				m_MouseModes = Input()->GetMouseModes();
+				Input()->SetMouseModes(0);
 				m_WindowMustRefocus++;
 			}
 
 			if(m_WindowMustRefocus >= 3 || Input()->KeyPressed(KEY_MOUSE_1))
 			{
-//				Input()->MouseModeRelative();
+				Input()->SetMouseModes(m_MouseModes);
 				m_WindowMustRefocus = 0;
 			}
 		}
@@ -2001,7 +2006,8 @@ void CClient::Run()
 		if(CtrlShiftKey('e', LastE))
 		{
 			g_Config.m_ClEditor = g_Config.m_ClEditor^1;
-//			Input()->MouseModeRelative();
+			Input()->SetMouseModes(m_MouseModes);
+			m_WindowMustRefocus = 0;
 		}
 
 		/*
