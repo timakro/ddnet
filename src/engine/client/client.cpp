@@ -1926,7 +1926,7 @@ void CClient::Run()
 	// never start with the editor
 	g_Config.m_ClEditor = 0;
 
-	Input()->MouseModeRelative();
+//	Input()->MouseModeRelative();
 
 	// process pending commands
 	m_pConsole->StoreCommands(false);
@@ -1959,13 +1959,13 @@ void CClient::Run()
 		// release focus
 		if(!m_pGraphics->WindowActive())
 		{
-			if(m_WindowMustRefocus == 0)
-				Input()->MouseModeAbsolute();
+//			if(m_WindowMustRefocus == 0)
+//				Input()->MouseModeAbsolute();
 			m_WindowMustRefocus = 1;
 		}
 		else if (g_Config.m_DbgFocus && Input()->KeyPressed(KEY_ESCAPE))
 		{
-			Input()->MouseModeAbsolute();
+//			Input()->MouseModeAbsolute();
 			m_WindowMustRefocus = 1;
 		}
 
@@ -1974,13 +1974,13 @@ void CClient::Run()
 		{
 			if(m_WindowMustRefocus < 3)
 			{
-				Input()->MouseModeAbsolute();
+//				Input()->MouseModeAbsolute();
 				m_WindowMustRefocus++;
 			}
 
 			if(m_WindowMustRefocus >= 3 || Input()->KeyPressed(KEY_MOUSE_1))
 			{
-				Input()->MouseModeRelative();
+//				Input()->MouseModeRelative();
 				m_WindowMustRefocus = 0;
 			}
 		}
@@ -2001,7 +2001,7 @@ void CClient::Run()
 		if(CtrlShiftKey('e', LastE))
 		{
 			g_Config.m_ClEditor = g_Config.m_ClEditor^1;
-			Input()->MouseModeRelative();
+//			Input()->MouseModeRelative();
 		}
 
 		/*
