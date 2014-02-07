@@ -276,12 +276,12 @@ void CBinds::SetDDRaceBinds(bool FreeOnly)
 		Bind('s', "+showhookcoll");
 		Bind(KEY_PAGEDOWN, "cl_show_entities 0");
 		Bind(KEY_PAGEUP, "cl_show_entities 1");
-		Bind(KEY_KP0, "say /emote normal 999999");
-		Bind(KEY_KP1, "say /emote happy 999999");
-		Bind(KEY_KP2, "say /emote angry 999999");
-		Bind(KEY_KP3, "say /emote pain 999999");
-		Bind(KEY_KP4, "say /emote surprise 999999");
-		Bind(KEY_KP5, "say /emote blink 999999");
+		Bind(KEY_KP_0, "say /emote normal 999999");
+		Bind(KEY_KP_1, "say /emote happy 999999");
+		Bind(KEY_KP_2, "say /emote angry 999999");
+		Bind(KEY_KP_3, "say /emote pain 999999");
+		Bind(KEY_KP_4, "say /emote surprise 999999");
+		Bind(KEY_KP_5, "say /emote blink 999999");
 		Bind(KEY_MOUSE_3, "+spectate");
 	}
 	else
@@ -324,18 +324,18 @@ void CBinds::SetDDRaceBinds(bool FreeOnly)
 			Bind(KEY_PAGEDOWN, "cl_show_entities 0");
 		if(!Get(KEY_PAGEUP)[0])
 			Bind(KEY_PAGEUP, "cl_show_entities 1");
-		if(!Get(KEY_KP0)[0])
-			Bind(KEY_KP0, "say /emote normal 999999");
-		if(!Get(KEY_KP1)[0])
-			Bind(KEY_KP1, "say /emote happy 999999");
-		if(!Get(KEY_KP2)[0])
-			Bind(KEY_KP2, "say /emote angry 999999");
-		if(!Get(KEY_KP3)[0])
-			Bind(KEY_KP3, "say /emote pain 999999");
-		if(!Get(KEY_KP4)[0])
-			Bind(KEY_KP4, "say /emote surprise 999999");
-		if(!Get(KEY_KP5)[0])
-			Bind(KEY_KP5, "say /emote blink 999999");
+		if(!Get(KEY_KP_0)[0])
+			Bind(KEY_KP_0, "say /emote normal 999999");
+		if(!Get(KEY_KP_1)[0])
+			Bind(KEY_KP_1, "say /emote happy 999999");
+		if(!Get(KEY_KP_2)[0])
+			Bind(KEY_KP_2, "say /emote angry 999999");
+		if(!Get(KEY_KP_3)[0])
+			Bind(KEY_KP_3, "say /emote pain 999999");
+		if(!Get(KEY_KP_4)[0])
+			Bind(KEY_KP_4, "say /emote surprise 999999");
+		if(!Get(KEY_KP_5)[0])
+			Bind(KEY_KP_5, "say /emote blink 999999");
 		if(!Get(KEY_MOUSE_3)[0])
 			Bind(KEY_MOUSE_3, "+spectate");
 		if(!Get(KEY_MINUS)[0])

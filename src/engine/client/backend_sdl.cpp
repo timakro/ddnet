@@ -1,6 +1,7 @@
 
 #include "SDL.h"
 #include "SDL_opengl.h"
+#include <GL/glu.h>
 
 #include <base/tl/threading.h>
 
@@ -414,7 +415,7 @@ void CCommandProcessorFragment_SDL::Cmd_VideoModes(const CCommandBuffer::SComman
 {
 	SDL_DisplayMode mode;
 	int maxModes = SDL_GetNumDisplayModes(0),
-	numModes = 0;
+		numModes = 0;
 	for(int i = 0; i < maxModes; i++)
 	{
 		if(SDL_GetDisplayMode(0, i, &mode) < 0)
@@ -489,44 +490,26 @@ int CGraphicsBackend_SDL_OpenGL::Init(const char *pName, int *Width, int *Height
 
 		#ifdef CONF_FAMILY_WINDOWS
 			if(!getenv("SDL_VIDEO_WINDOW_POS") && !getenv("SDL_VIDEO_CENTERED")) // ignore_convention
-				putenv("SDL_VIDEO_WINDOW_POS=center"); // ignore_convention
+				putenv("SDL_VIDEO_WINDOW_POS=8,27"); // ignore_convention
 		#endif
 	}
 
-	const SDL_VideoInfo *pInfo = SDL_GetVideoInfo();
-	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE); // prevent stuck mouse cursor sdl-bug when loosing fullscreen focus in windows
-
-	// use current resolution as default
-	if(*Width == 0 || *Height == 0)
+	SDL_DisplayMode mode;
+	if(SDL_GetCurrentDisplayMode(0, &mode) < 0)
 	{
-		*Width = pInfo->current_w;
-		*Height = pInfo->current_h;
+		dbg_msg("gfx", "unable to get current display mode: %s", SDL_GetError());
+		return -1;
 	}
 
-	// set flags
-	int SdlFlags = SDL_OPENGL;
-	if(Flags&IGraphicsBackend::INITFLAG_RESIZABLE)
-		SdlFlags |= SDL_RESIZABLE;
+	if(*Width == 0 || *Height == 0)
+	{
+		*Width = mode.w;
+		*Height = mode.h; 
+	}
 
-	if(pInfo->hw_available) // ignore_convention
-		SdlFlags |= SDL_HWSURFACE;
-	else
-		SdlFlags |= SDL_SWSURFACE;
+	//*pDesktopWidth = mode.w;
+	//*pDesktopHeight = mode.h;
 
-	if(pInfo->blit_hw) // ignore_convention
-		SdlFlags |= SDL_HWACCEL;
-
-	dbg_assert(!(Flags&IGraphicsBackend::INITFLAG_BORDERLESS)
-		|| !(Flags&IGraphicsBackend::INITFLAG_FULLSCREEN),
-		"only one of borderless and fullscreen may be activated at the same time");
-
-	if(Flags&IGraphicsBackend::INITFLAG_BORDERLESS)
-		SdlFlags |= SDL_NOFRAME;
-
-	if(Flags&IGraphicsBackend::INITFLAG_FULLSCREEN)
-		SdlFlags |= SDL_FULLSCREEN;
-
-	// set gl attributes
 	if(FsaaSamples)
 	{
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
@@ -539,21 +522,50 @@ int CGraphicsBackend_SDL_OpenGL::Init(const char *pName, int *Width, int *Height
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, Flags&IGraphicsBackend::INITFLAG_VSYNC ? 1 : 0);
 
-	// set caption
-	SDL_WM_SetCaption(pName, pName);
+	// set flags
+	int SdlFlags = SDL_WINDOW_OPENGL;
+	if(Flags&IGraphicsBackend::INITFLAG_RESIZABLE)
+		SdlFlags |= SDL_WINDOW_RESIZABLE;
 
-	// create window
-	m_pScreenSurface = SDL_SetVideoMode(*Width, *Height, 0, SdlFlags);
-	if(!m_pScreenSurface)
+	dbg_assert(!(Flags&IGraphicsBackend::INITFLAG_BORDERLESS)
+		|| !(Flags&IGraphicsBackend::INITFLAG_FULLSCREEN),
+		"only one of borderless and fullscreen may be activated at the same time");
+
+	if(Flags&IGraphicsBackend::INITFLAG_BORDERLESS)
+		SdlFlags |= SDL_WINDOW_BORDERLESS;
+
+	if(Flags&IGraphicsBackend::INITFLAG_FULLSCREEN)
+		SdlFlags |= SDL_WINDOW_FULLSCREEN;
+
+	m_pWindow = SDL_CreateWindow(
+		pName,
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		*Width,
+		*Height,
+		SdlFlags
+	);
+
+	if(m_pWindow == NULL)
 	{
-		dbg_msg("gfx", "unable to set video mode: %s", SDL_GetError());
-		//*pCommand->m_pResult = -1;
+		dbg_msg("gfx", "unable to create window: %s", SDL_GetError());
 		return -1;
-	}		
+	}
 
 	SDL_ShowCursor(0);
+
+	int RenderFlags = SDL_RENDERER_ACCELERATED;
+	if(Flags&IGraphicsBackend::INITFLAG_VSYNC)
+		RenderFlags |= SDL_RENDERER_PRESENTVSYNC;
+
+	m_pRenderer = SDL_CreateRenderer(m_pWindow, -1, RenderFlags);
+
+	if(m_pRenderer == NULL)
+	{
+		dbg_msg("gfx", "unable to create renderer: %s", SDL_GetError());
+		return -1;
+	}
 
 	// fetch gl contexts and release the context from this thread
 	m_GLContext = GL_GetCurrentContext();
@@ -574,7 +586,6 @@ int CGraphicsBackend_SDL_OpenGL::Init(const char *pName, int *Width, int *Height
 	RunBuffer(&CmdBuffer);
 	WaitForIdle();
 
-	// return
 	return 0;
 }
 
@@ -592,6 +603,8 @@ int CGraphicsBackend_SDL_OpenGL::Shutdown()
 	delete m_pProcessor;
 	m_pProcessor = 0;
 
+	SDL_DestroyRenderer(m_pRenderer);
+	SDL_DestroyWindow(m_pWindow);
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	return 0;
 }
@@ -623,13 +636,12 @@ void CGraphicsBackend_SDL_OpenGL::WarpMouse(int x, int y)
 
 int CGraphicsBackend_SDL_OpenGL::WindowActive()
 {
-	return SDL_GetAppState()&SDL_APPINPUTFOCUS;
+	return SDL_GetWindowFlags(m_pWindow)&SDL_WINDOW_INPUT_FOCUS;
 }
 
 int CGraphicsBackend_SDL_OpenGL::WindowOpen()
 {
-	return SDL_GetAppState()&SDL_APPACTIVE;
-
+	return SDL_GetWindowFlags(m_pWindow)&SDL_WINDOW_SHOWN;
 }
 
 

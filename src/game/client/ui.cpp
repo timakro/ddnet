@@ -311,45 +311,7 @@ int CUI::DoButtonLogic(const void *pID, const char *pText, int Checked, const CU
 
 	return ReturnValue;
 }
-<<<<<<< HEAD
-=======
 
-int CUI::DoPickerLogic(const void *pID, const CUIRect *pRect, float *pX, float *pY)
-{
-	int Inside = MouseInside(pRect);
-
-	if(ActiveItem() == pID)
-	{
-		if(!MouseButton(0))
-			SetActiveItem(0);
-	}
-	else if(HotItem() == pID)
-	{
-		if(MouseButton(0))
-			SetActiveItem(pID);
-	}
-	else if(Inside)
-		SetHotItem(pID);
-
-	if(ActiveItem() != pID)
-		return 0;
-	if(pX)
-		*pX = clamp(m_MouseX - pRect->x, 0.0f, pRect->w) / Scale();
-	if(pY)
-		*pY = clamp(m_MouseY - pRect->y, 0.0f, pRect->h) / Scale();
-
-	return 1;
-}
-
-int CUI::DoColorSelectionLogic(const CUIRect *pRect, const CUIRect *pButton) // it's counter logic! FIXME
-{
-	if(MouseButtonClicked(0) && MouseInside(pRect) && !MouseInside(pButton))
-		return 1;
-	else
-		return 0;
-}
-
->>>>>>> test
 /*
 int CUI::DoButton(const void *id, const char *text, int checked, const CUIRect *r, ui_draw_button_func draw_func, const void *extra)
 {

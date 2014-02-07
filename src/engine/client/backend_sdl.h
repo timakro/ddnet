@@ -1,9 +1,6 @@
-
-#include "SDL.h"
-#include "SDL_opengl.h"
+#pragma once
 
 #include "graphics_threaded.h"
-
 
 
 // platform dependent implementations for transfering render context from the main thread to the graphics thread
@@ -255,7 +252,8 @@ class CCommandProcessor_SDL_OpenGL : public CGraphicsBackend_Threaded::ICommandP
 // graphics backend implemented with SDL and OpenGL
 class CGraphicsBackend_SDL_OpenGL : public CGraphicsBackend_Threaded
 {
-	SDL_Surface *m_pScreenSurface;
+    SDL_Window *m_pWindow;
+    SDL_Renderer *m_pRenderer;
 	ICommandProcessor *m_pProcessor;
 	SGLContext m_GLContext;
 	volatile int m_TextureMemoryUsage;

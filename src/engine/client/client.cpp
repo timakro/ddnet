@@ -1848,13 +1848,9 @@ void CClient::Run()
 		atexit(SDL_Quit); // ignore_convention
 	}
 
-	m_MenuStartTime = time_get();
 	// init graphics
 	{
-		if(g_Config.m_GfxThreaded)
-			m_pGraphics = CreateEngineGraphicsThreaded();
-		else
-			m_pGraphics = CreateEngineGraphics();
+		m_pGraphics = CreateEngineGraphicsThreaded();
 
 		bool RegisterFail = false;
 		RegisterFail = RegisterFail || !Kernel()->RegisterInterface(static_cast<IEngineGraphics*>(m_pGraphics)); // register graphics as both

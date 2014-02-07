@@ -272,7 +272,7 @@ function build(settings)
 	end
 
 	-- apply sdl settings
-	config.sdl:Apply(client_settings)
+	config.sdl2:Apply(client_settings)
 	-- apply freetype settings
 	config.freetype:Apply(client_settings)
 
