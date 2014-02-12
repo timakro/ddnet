@@ -5,7 +5,7 @@
 
 #include "kernel.h"
 
-extern const char g_aaKeyStrings[512][16];
+extern const char g_aaKeyStrings[512][20];
 
 class IInput : public IInterface
 {
@@ -74,12 +74,25 @@ public:
 	int KeyDown(int Key) { return KeyPressed(Key)&&!KeyWasPressed(Key); }
 	const char *KeyName(int Key) { return (Key >= 0 && Key < 512) ? g_aaKeyStrings[Key] : g_aaKeyStrings[0]; }
 
-	//
-	virtual void MouseModeRelative() = 0;
-	virtual void MouseModeAbsolute() = 0;
-	virtual int MouseDoubleClick() = 0;
+	enum MouseMode {
+		MOUSE_MODE_NONE,
+		MOUSE_MODE_WARP_CENTER = 1 << 0,
+		MOUSE_MODE_NO_MOUSE = 1 << 1
+	};
 
-	virtual void MouseRelative(float *x, float *y) = 0;
+	//
+	virtual void SetMouseModes(int modes) = 0;
+	virtual int GetMouseModes() = 0;
+	virtual void GetMousePosition(float *x, float *y) = 0;
+	virtual void GetRelativePosition(float *x, float *y) = 0;
+	virtual bool MouseMoved() = 0;
+	virtual int MouseDoubleClick() = 0;
+	virtual const char* GetClipboardText() = 0;
+	virtual void SetClipboardText(const char *Text) = 0;
+	virtual bool MouseLeft() = 0;
+	virtual bool MouseEntered() = 0;
+
+	virtual int ShowCursor(bool show) = 0;
 };
 
 

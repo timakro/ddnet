@@ -200,6 +200,26 @@ int CMenus::DoEditBox(void *pID, const CUIRect *pRect, char *pStr, unsigned StrS
 	static bool s_DoScroll = false;
 	static float s_ScrollStart = 0.0f;
 
+	if(Input()->KeyPressed(KEY_LCTRL) && Input()->KeyDown(KEY_V))
+	{
+		const char *Text = Input()->GetClipboardText();
+		int CharsLeft = StrSize - str_length(pStr);
+		int Offset = str_length(pStr);
+		for(int i = 0; i < str_length(Text) && i <= CharsLeft; i++)
+		{
+			if(Text[i] == '\n')
+				pStr[i + Offset] = ' ';
+			else
+				pStr[i + Offset] = Text[i];
+		}
+		s_AtIndex = str_length(pStr);
+	}
+
+	if(Input()->KeyPressed(KEY_LCTRL) && Input()->KeyDown(KEY_C))
+	{
+		Input()->SetClipboardText(pStr);
+	}
+
 	FontSize *= UI()->Scale();
 
 	if(UI()->LastActiveItem() == pID)
@@ -1371,13 +1391,12 @@ bool CMenus::OnMouseMove(float x, float y)
 	if(!m_MenuActive)
 		return false;
 
+	Input()->SetMouseModes(0);
+	Input()->ShowCursor(g_Config.m_InpHWCursor);
+
 	UI()->ConvertMouseMove(&x, &y);
-	m_MousePos.x += x;
-	m_MousePos.y += y;
-	if(m_MousePos.x < 0) m_MousePos.x = 0;
-	if(m_MousePos.y < 0) m_MousePos.y = 0;
-	if(m_MousePos.x > Graphics()->ScreenWidth()) m_MousePos.x = Graphics()->ScreenWidth();
-	if(m_MousePos.y > Graphics()->ScreenHeight()) m_MousePos.y = Graphics()->ScreenHeight();
+	m_MousePos.x = x;
+	m_MousePos.y = y;
 
 	return true;
 }
@@ -1541,13 +1560,16 @@ void CMenus::OnRender()
 	if(Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		Render();
 
-	// render cursor
-	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_CURSOR].m_Id);
-	Graphics()->QuadsBegin();
-	Graphics()->SetColor(1,1,1,1);
-	IGraphics::CQuadItem QuadItem(mx, my, 24, 24);
-	Graphics()->QuadsDrawTL(&QuadItem, 1);
-	Graphics()->QuadsEnd();
+	if(!g_Config.m_InpHWCursor)
+	{
+		// render cursor
+		Graphics()->TextureSet(g_pData->m_aImages[IMAGE_CURSOR].m_Id);
+		Graphics()->QuadsBegin();
+		Graphics()->SetColor(1,1,1,1);
+		IGraphics::CQuadItem QuadItem(mx, my, 24, 24);
+		Graphics()->QuadsDrawTL(&QuadItem, 1);
+		Graphics()->QuadsEnd();
+	}
 
 	// render debug information
 	if(g_Config.m_Debug)

@@ -107,6 +107,39 @@ bool CChat::OnInput(IInput::CEvent Event)
 	if(m_Mode == MODE_NONE)
 		return false;
 
+	if(Input()->KeyPressed(KEY_LCTRL) && Input()->KeyDown(KEY_V))
+	{
+		const char *text = Input()->GetClipboardText();
+		// if the text has more than one line, we send all lines except the last one
+		// the last one is set as in the text field
+		char Line[256];
+		int i, Begin = 0;
+		for(i = 0; i < str_length(text); i++)
+		{
+			if(text[i] == '\n')
+			{
+				int max = i - Begin + 1;
+				if(max > (int)sizeof(Line))
+					max = sizeof(Line);
+				str_copy(Line, text + Begin, max);
+				Begin = i+1;
+				SayChat(Line);
+			    while(text[i] == '\n') i++;
+			}
+		}
+		int max = i - Begin + 1;
+		if(max > (int)sizeof(Line))
+			max = sizeof(Line);
+		str_copy(Line, text + Begin, max);
+		Begin = i+1;
+		m_Input.Add(Line);
+	}
+
+	if(Input()->KeyPressed(KEY_LCTRL) && Input()->KeyDown(KEY_C))
+	{
+		Input()->SetClipboardText(m_Input.GetString());
+	}
+
 	if(Event.m_Flags&IInput::FLAG_PRESS && Event.m_Key == KEY_ESCAPE)
 	{
 		m_Mode = MODE_NONE;
