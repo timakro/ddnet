@@ -79,6 +79,7 @@ public:
 	void EnableMode(int Team);
 
 	void Say(int Team, const char *pLine);
+	void SayChat(const char *pLine);
 
 	virtual void OnReset();
 	virtual void OnConsoleInit();

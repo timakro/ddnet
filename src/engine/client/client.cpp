@@ -265,7 +265,7 @@ CClient::CClient() : m_DemoPlayer(&m_SnapshotDelta), m_DemoRecorder(&m_SnapshotD
 
 	m_GameTickSpeed = SERVER_TICK_SPEED;
 
-	m_MouseIsFree = false
+	m_MouseIsFree = false;
 	m_SnapCrcErrors = 0;
 	m_AutoScreenshotRecycle = false;
 	m_EditorActive = false;

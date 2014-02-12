@@ -1,3 +1,5 @@
+#pragma once
+
 #include "graphics_threaded.h"
 #include "SDL.h"
 #include "SDL_opengl.h"
@@ -36,6 +38,7 @@
 			objc_msgSend(m_Pool, selector);
 		}
 	};
+#endif
 
 // basic threaded backend, abstract, missing init and shutdown functions
 class CGraphicsBackend_Threaded : public IGraphicsBackend

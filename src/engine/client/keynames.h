@@ -8,7 +8,7 @@
 
 #include <string.h>
 
-const char g_aaKeyStrings[512][16] =
+const char g_aaKeyStrings[512][20] =
 {
 	"first",
 	"&1",

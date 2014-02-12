@@ -497,7 +497,7 @@ void CCommandProcessor_SDL_OpenGL::RunBuffer(CCommandBuffer *pBuffer)
 
 // ------------ CGraphicsBackend_SDL_OpenGL
 
-int CGraphicsBackend_SDL_OpenGL::Init(const char *pName, int *Width, int *Height, int Screen, int FsaaSamples, int Flags)
+int CGraphicsBackend_SDL_OpenGL::Init(const char *pName, int *Width, int *Height, int Screen, int FsaaSamples, int Flags, int *pDesktopWidth, int *pDesktopHeight)
 {
 	if(!SDL_WasInit(SDL_INIT_VIDEO))
 	{

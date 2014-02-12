@@ -50,6 +50,8 @@ class IGraphics : public IInterface
 protected:
 	int m_ScreenWidth;
 	int m_ScreenHeight;
+	int m_DesktopScreenWidth;
+	int m_DesktopScreenHeight;
 public:
 	/* Constants: Texture Loading Flags
 		TEXLOAD_NORESAMPLE - Prevents the texture from any resampling

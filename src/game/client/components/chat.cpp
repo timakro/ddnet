@@ -124,7 +124,7 @@ bool CChat::OnInput(IInput::CEvent Event)
 				str_copy(Line, text + Begin, max);
 				Begin = i+1;
 				SayChat(Line);
-			    while(text[i] == '\n') i++;
+				while(text[i] == '\n') i++;
 			}
 		}
 		int max = i - Begin + 1;
@@ -611,4 +611,30 @@ void CChat::Say(int Team, const char *pLine)
 	Msg.m_Team = Team;
 	Msg.m_pMessage = pLine;
 	Client()->SendPackMsg(&Msg, MSGFLAG_VITAL);
+}
+
+void CChat::SayChat(const char *pLine)
+{
+	if(!pLine || str_length(pLine) < 1)
+		return;
+
+	bool AddEntry = false;
+
+	if(m_LastChatSend+time_freq() < time_get())
+	{
+		Say(m_Mode == MODE_ALL ? 0 : 1, pLine);
+		AddEntry = true;
+	}
+	else if(m_PendingChatCounter < 3)
+	{
+		++m_PendingChatCounter;
+		AddEntry = true;
+	}
+
+	if(AddEntry)
+	{
+		CHistoryEntry *pEntry = m_History.Allocate(sizeof(CHistoryEntry)+str_length(pLine)-1);
+		pEntry->m_Team = m_Mode == MODE_ALL ? 0 : 1;
+		mem_copy(pEntry->m_aText, pLine, str_length(pLine));
+	}
 }
