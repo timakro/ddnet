@@ -4,8 +4,8 @@
 
 #include <base/system.h>
 #include <engine/shared/config.h>
-#include <engine/graphics.h>
 #include <engine/storage.h>
+#include <engine/graphics.h>
 #include <engine/input.h>
 #include <engine/keys.h>
 
@@ -43,14 +43,8 @@ CInput::CInput()
 	m_LastMousePosX = 0;
 	m_LastMousePosY = 0;
 
-	m_pCursorSurface = NULL;
-	m_pCursor = NULL;
-
 	m_LastRelease = 0;
 	m_ReleaseDelta = -1;
-
-	m_MouseLeft = false;
-	m_MouseEntered = false;
 
 	m_NumEvents = 0;
 }
@@ -59,37 +53,7 @@ void CInput::Init()
 {
 	m_pGraphics = Kernel()->RequestInterface<IEngineGraphics>();
 	SDL_StartTextInput();
-	ShowCursor(true);
-	//m_pGraphics->GrabWindow(true);
-}
-
-void CInput::LoadHardwareCursor()
-{
-	if(m_pCursor != NULL)
-		return;
-
-	CImageInfo CursorImg;
-	if(!m_pGraphics->LoadPNG(&CursorImg, "gui_cursor_small.png", IStorage::TYPE_ALL))
-		return;
-
-	m_pCursorSurface = SDL_CreateRGBSurfaceFrom(
-		CursorImg.m_pData, CursorImg.m_Width, CursorImg.m_Height,
-		32, 4*CursorImg.m_Width,
-		0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-	if(!m_pCursorSurface)
-		return;
-
-	m_pCursor = SDL_CreateColorCursor(m_pCursorSurface, 0, 0);
-}
-
-int CInput::ShowCursor(bool show)
-{
-	if(g_Config.m_InpHWCursor)
-	{
-		LoadHardwareCursor();
-		SDL_SetCursor(m_pCursor);
-	}
-	return SDL_ShowCursor(show);
+	//SDL_ShowCursor(0);
 }
 
 void CInput::SetMouseModes(int modes)
@@ -103,7 +67,7 @@ void CInput::SetMouseModes(int modes)
 }
 
 int CInput::GetMouseModes()
-{
+{;
 	return m_MouseModes;
 }
 
@@ -152,6 +116,101 @@ bool CInput::MouseMoved()
 	return x != 0 || y != 0;
 }
 
+#if 0
+void CInput::ShowCursor(bool show)
+{
+	SDL_ShowCursor(show);
+}
+
+bool CInput::GetShowCursor()
+{
+	return SDL_ShowCursor(-1);
+}
+
+void CInput::SetMouseMode(CInput::MouseMode mode)
+{
+	if(m_MouseMode == mode)
+		return;
+
+	m_MouseMode = mode;
+	if(g_Config.m_InpGrab)
+	{
+		if(mode == MOUSE_MODE_RELATIVE)
+			m_pGraphics->GrabWindow(true);
+		else if(mode == MOUSE_MODE_ABSOLUTE)
+			m_pGraphics->GrabWindow(false);
+	}
+}
+
+CInput::MouseMode CInput::GetMouseMode()
+{
+	return m_MouseMode;
+}
+
+void CInput::GetMousePosition(float *x, float *y)
+{
+	int nx = 0, ny = 0;
+	if(m_MouseMode == MOUSE_MODE_RELATIVE)
+	{
+		float Sens = g_Config.m_InpMousesens/100.0f;
+		SDL_GetRelativeMouseState(&nx, &ny);
+		nx *= Sens;
+		ny *= Sens;
+	}
+	else if(m_MouseMode == MOUSE_MODE_ABSOLUTE)
+	{
+		SDL_GetMouseState(&nx, &ny);
+	}
+	*x = nx;
+	*y = ny;
+}
+
+bool CInput::MouseMoved()
+{
+	int x = 0, y = 0;
+	SDL_GetRelativeMouseState(&x, &y);
+	return x != 0 || y != 0;
+}
+#endif
+#if 0
+void CInput::MouseRelative(float *x, float *y)
+{
+	int nx = 0, ny = 0;
+	float Sens = g_Config.m_InpMousesens/100.0f;
+
+	if(g_Config.m_InpGrab)
+		SDL_GetRelativeMouseState(&nx, &ny);
+	else
+	{
+		if(m_InputGrabbed)
+		{
+			SDL_GetMouseState(&nx,&ny);
+			m_pGraphics->WarpMouse( Graphics()->ScreenWidth()/2,Graphics()->ScreenHeight()/2);
+			nx -= Graphics()->ScreenWidth()/2; ny -= Graphics()->ScreenHeight()/2;
+		}
+	}
+
+	*x = nx*Sens;
+	*y = ny*Sens;
+}
+
+void CInput::MouseModeAbsolute()
+{
+	SDL_ShowCursor(1);
+	m_InputGrabbed = 0;
+	if(g_Config.m_InpGrab)
+		m_pGraphics->GrabWindow(false);
+}
+
+void CInput::MouseModeRelative()
+{
+	SDL_ShowCursor(0);
+	m_InputGrabbed = 1;
+	if(g_Config.m_InpGrab)
+		m_pGraphics->GrabWindow(true);
+}
+#endif
+
 int CInput::MouseDoubleClick()
 {
 	if(m_ReleaseDelta >= 0 && m_ReleaseDelta < (time_freq() >> 2))
@@ -161,31 +220,6 @@ int CInput::MouseDoubleClick()
 		return 1;
 	}
 	return 0;
-}
-
-const char* CInput::GetClipboardText()
-{
-	if(m_pClipboardText)
-	{
-		free(m_pClipboardText);
-	}
-	m_pClipboardText = SDL_GetClipboardText();
-	return m_pClipboardText;
-}
-
-void CInput::SetClipboardText(const char *Text)
-{
-	SDL_SetClipboardText(Text);
-}
-
-bool CInput::MouseLeft()
-{
-	return m_MouseLeft;
-}
-
-bool CInput::MouseEntered()
-{
-	return m_MouseEntered;
 }
 
 void CInput::ClearKeyStates()
@@ -224,9 +258,6 @@ int CInput::Update()
 		mem_copy(m_aInputState[m_InputCurrent], pState, i);
 	}
 
-	m_MouseLeft = false;
-	m_MouseEntered = false;
-
 	// these states must always be updated manually because they are not in the GetKeyState from SDL
 	int i = SDL_GetMouseState(NULL, NULL);
 	if(i&SDL_BUTTON(1)) m_aInputState[m_InputCurrent][KEY_MOUSE_1] = 1; // 1 is left
@@ -237,6 +268,7 @@ int CInput::Update()
 	if(i&SDL_BUTTON(6)) m_aInputState[m_InputCurrent][KEY_MOUSE_6] = 1;
 	if(i&SDL_BUTTON(7)) m_aInputState[m_InputCurrent][KEY_MOUSE_7] = 1;
 	if(i&SDL_BUTTON(8)) m_aInputState[m_InputCurrent][KEY_MOUSE_8] = 1;
+	if(i&SDL_BUTTON(9)) m_aInputState[m_InputCurrent][KEY_MOUSE_9] = 1;
 
 	{
 		SDL_Event Event;
@@ -283,6 +315,7 @@ int CInput::Update()
 					if(Event.button.button == 6) Key = KEY_MOUSE_6; // ignore_convention
 					if(Event.button.button == 7) Key = KEY_MOUSE_7; // ignore_convention
 					if(Event.button.button == 8) Key = KEY_MOUSE_8; // ignore_convention
+					if(Event.button.button == 9) Key = KEY_MOUSE_9; // ignore_convention
 					break;
 
 				case SDL_MOUSEWHEEL:
@@ -290,11 +323,6 @@ int CInput::Update()
 					if(Event.wheel.y < 0) Key = KEY_MOUSE_WHEEL_DOWN; // ignore_convention
 					AddEvent(0, Key, Action);
 					Action = IInput::FLAG_RELEASE;
-					break;
-
-				case SDL_WINDOWEVENT:
-					if(Event.window.event == SDL_WINDOWEVENT_ENTER) m_MouseEntered = true;
-					if(Event.window.event == SDL_WINDOWEVENT_LEAVE) m_MouseLeft = true;
 					break;
 
 				// other messages
@@ -315,6 +343,59 @@ int CInput::Update()
 	}
 
 	return 0;
+}
+
+const char* CInput::GetClipboardText()
+{
+	if(m_pClipboardText)
+	{
+		free(m_pClipboardText);
+	}
+	m_pClipboardText = SDL_GetClipboardText();
+	return m_pClipboardText;
+}
+
+void CInput::SetClipboardText(const char *Text)
+{
+	SDL_SetClipboardText(Text);
+}
+
+bool CInput::MouseLeft()
+{
+	return m_MouseLeft;
+}
+
+bool CInput::MouseEntered()
+{
+	return m_MouseEntered;
+}
+
+void CInput::LoadHardwareCursor()
+{
+	if(m_pCursor != NULL)
+		return;
+
+	CImageInfo CursorImg;
+	if(!m_pGraphics->LoadPNG(&CursorImg, "gui_cursor_small.png", IStorage::TYPE_ALL))
+		return;
+
+	m_pCursorSurface = SDL_CreateRGBSurfaceFrom(
+		CursorImg.m_pData, CursorImg.m_Width, CursorImg.m_Height,
+		32, 4*CursorImg.m_Width,
+		0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	if(!m_pCursorSurface)
+		return;
+
+	m_pCursor = SDL_CreateColorCursor(m_pCursorSurface, 0, 0);
+}
+int CInput::ShowCursor(bool show)
+{
+	if(g_Config.m_InpHWCursor)
+	{
+		LoadHardwareCursor();
+		SDL_SetCursor(m_pCursor);
+	}
+	return SDL_ShowCursor(show);
 }
 
 
