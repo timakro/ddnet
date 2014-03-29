@@ -15,6 +15,7 @@ public:
 		vec2 Dir,
 		int Span,
 		bool Freeeze,
+		int Damage,
 		bool Explosive,
 		float Force,
 		int SoundImpact,
@@ -42,6 +43,7 @@ private:
 	float m_Force;
 	int m_StartTick;
 	bool m_Explosive;
+	int m_Damage;
 
 	// DDRace
 

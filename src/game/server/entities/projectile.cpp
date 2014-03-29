@@ -17,6 +17,7 @@ CProjectile::CProjectile
 		vec2 Dir,
 		int Span,
 		bool Freeze,
+		int Damage,
 		bool Explosive,
 		float Force,
 		int SoundImpact,
@@ -32,7 +33,7 @@ CProjectile::CProjectile
 	m_LifeSpan = Span;
 	m_Owner = Owner;
 	m_Force = Force;
-	//m_Damage = Damage;
+	m_Damage = Damage;
 	m_SoundImpact = SoundImpact;
 	m_Weapon = Weapon;
 	m_StartTick = Server()->Tick();
@@ -172,7 +173,8 @@ void CProjectile::Tick()
 		}
 		else if (m_Weapon == WEAPON_GUN)
 		{
-			GameServer()->CreateDamageInd(CurPos, -atan2(m_Direction.x, m_Direction.y), 10, (m_Owner != -1)? TeamMask : -1LL);
+			//GameServer()->CreateDamageInd(CurPos, -atan2(m_Direction.x, m_Direction.y), 10, (m_Owner != -1)? TeamMask : -1LL);
+			pTargetChr->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon);
 			GameServer()->m_World.DestroyEntity(this);
 		}
 		else

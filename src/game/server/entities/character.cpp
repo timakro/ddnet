@@ -411,6 +411,7 @@ void CCharacter::FireWeapon()
 						Direction,//Dir
 						Lifetime,//Span
 						0,//Freeze
+						1,//Damage
 						0,//Explosive
 						0,//Force
 						-1,//SoundImpact
@@ -490,6 +491,7 @@ void CCharacter::FireWeapon()
 					Direction,//Dir
 					Lifetime,//Span
 					0,//Freeze
+					0,//Damage
 					true,//Explosive
 					0,//Force
 					SOUND_GRENADE_EXPLODE,//SoundImpact
@@ -857,10 +859,7 @@ void CCharacter::Die(int Killer, int Weapon)
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {
-	/*m_Core.m_Vel += Force;
-
-	if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)
-		return false;
+	m_Core.m_Vel += Force;
 
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
@@ -941,7 +940,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	if (Dmg > 2)
 		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_LONG);
 	else
-		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_SHORT);*/
+		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_SHORT);
 
 	if (!m_Jetpack || m_ActiveWeapon != WEAPON_GUN)
 	{
