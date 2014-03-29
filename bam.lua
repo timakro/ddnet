@@ -222,6 +222,7 @@ function build(settings)
 	-- build the small libraries
 	wavpack = Compile(settings, Collect("src/engine/external/wavpack/*.c"))
 	pnglite = Compile(settings, Collect("src/engine/external/pnglite/*.c"))
+	manymouse = Compile(settings, Collect("src/engine/external/manymouse/*.c"))
 
 	-- build game components
 	engine_settings = settings:Copy()
@@ -300,12 +301,12 @@ function build(settings)
 	tools = {}
 	for i,v in ipairs(tools_src) do
 		toolname = PathFilename(PathBase(v))
-		tools[i] = Link(settings, toolname, Compile(settings, v), engine, zlib, pnglite)
+		tools[i] = Link(settings, toolname, Compile(settings, v), engine, zlib, pnglite, manymouse)
 	end
 
 	-- build client, server, version server and master server
 	client_exe = Link(client_settings, "DDNet", game_shared, game_client,
-		engine, client, game_editor, zlib, pnglite, wavpack,
+		engine, client, game_editor, zlib, pnglite, wavpack, manymouse,
 		client_link_other, client_osxlaunch)
 
 	server_exe = Link(server_settings, "DDNet-Server", engine, server,

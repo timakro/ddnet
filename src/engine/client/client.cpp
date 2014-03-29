@@ -46,6 +46,8 @@
 
 #include <engine/client/serverbrowser.h>
 
+#include <engine/external/manymouse/manymouse.h>
+
 #include "friends.h"
 #include "serverbrowser.h"
 #include "client.h"
@@ -1847,6 +1849,8 @@ void CClient::Run()
 			dbg_msg("client", "unable to init SDL base: %s", SDL_GetError());
 			return;
 		}
+
+		m_AvailableMice = ManyMouse_Init();
 
 		atexit(SDL_Quit); // ignore_convention
 	}

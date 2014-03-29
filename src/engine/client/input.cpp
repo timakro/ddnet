@@ -1,12 +1,14 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "SDL.h"
+#include <iostream>
 
 #include <base/system.h>
 #include <engine/shared/config.h>
 #include <engine/graphics.h>
 #include <engine/input.h>
 #include <engine/keys.h>
+#include <engine/external/manymouse/manymouse.h>
 
 #include "input.h"
 
@@ -52,6 +54,7 @@ void CInput::Init()
 
 void CInput::MouseRelative(float *x, float *y)
 {
+	/*
 	int nx = 0, ny = 0;
 	float Sens = g_Config.m_InpMousesens/100.0f;
 
@@ -69,6 +72,7 @@ void CInput::MouseRelative(float *x, float *y)
 
 	*x = nx*Sens;
 	*y = ny*Sens;
+	*/
 }
 
 void CInput::MouseModeAbsolute()
@@ -167,29 +171,6 @@ int CInput::Update()
 					Key = Event.key.keysym.sym; // ignore_convention
 					break;
 
-				// handle mouse buttons
-				case SDL_MOUSEBUTTONUP:
-					Action = IInput::FLAG_RELEASE;
-
-					if(Event.button.button == 1) // ignore_convention
-					{
-						m_ReleaseDelta = time_get() - m_LastRelease;
-						m_LastRelease = time_get();
-					}
-
-					// fall through
-				case SDL_MOUSEBUTTONDOWN:
-					if(Event.button.button == SDL_BUTTON_LEFT) Key = KEY_MOUSE_1; // ignore_convention
-					if(Event.button.button == SDL_BUTTON_RIGHT) Key = KEY_MOUSE_2; // ignore_convention
-					if(Event.button.button == SDL_BUTTON_MIDDLE) Key = KEY_MOUSE_3; // ignore_convention
-					if(Event.button.button == SDL_BUTTON_WHEELUP) Key = KEY_MOUSE_WHEEL_UP; // ignore_convention
-					if(Event.button.button == SDL_BUTTON_WHEELDOWN) Key = KEY_MOUSE_WHEEL_DOWN; // ignore_convention
-					if(Event.button.button == 6) Key = KEY_MOUSE_6; // ignore_convention
-					if(Event.button.button == 7) Key = KEY_MOUSE_7; // ignore_convention
-					if(Event.button.button == 8) Key = KEY_MOUSE_8; // ignore_convention
-					if(Event.button.button == 9) Key = KEY_MOUSE_9; // ignore_convention
-					break;
-
 				// other messages
 				case SDL_QUIT:
 					return 1;
@@ -203,7 +184,72 @@ int CInput::Update()
 					m_aInputState[m_InputCurrent][Key] = 1;
 				AddEvent(0, Key, Action);
 			}
+		}
+	}
 
+	{
+		ManyMouseEvent Event;
+		while(ManyMouse_PollEvent(&Event))
+		{
+			int Key = -1;
+			int Action = IInput::FLAG_PRESS;
+
+			if (Event.type == MANYMOUSE_EVENT_RELMOTION)
+			{
+				if (Event.item == 0)
+				{
+					int nx = Graphics()->ScreenWidth()/2;
+					*x = nx*Sens;
+				}
+				else if (Event.item == 1)
+				{
+					int ny = Graphics()->ScreenHeight()/2;
+					*y = ny*Sens;
+				}
+			}
+			else if (Event.type == MANYMOUSE_EVENT_BUTTON)
+			{
+				std::cout << Event.item << std::endl;
+				if (Event.item == 0) Key = KEY_MOUSE_1;
+				if (Event.item == 1) Key = KEY_MOUSE_2;
+				if (Event.item == 2) Key = KEY_MOUSE_3;
+				if (Event.item == 6) Key = KEY_MOUSE_6;
+				if (Event.item == 7) Key = KEY_MOUSE_7;
+				if (Event.item == 8) Key = KEY_MOUSE_8;
+				if (Event.item == 9) Key = KEY_MOUSE_9;
+
+				if (!Event.value)
+				{
+					Action = IInput::FLAG_RELEASE;
+
+					if(Event.item == 0) // ignore_convention
+					{
+						m_ReleaseDelta = time_get() - m_LastRelease;
+						m_LastRelease = time_get();
+					}
+				}
+			}
+			else if (Event.type == MANYMOUSE_EVENT_SCROLL)
+			{
+				if (Event.item == 0)
+				{
+					if (Event.value < 0)
+						Key = KEY_MOUSE_WHEEL_DOWN;
+					else
+						Key = KEY_MOUSE_WHEEL_UP;
+				}
+			}
+
+			//
+			if(Key != -1)
+			{
+				if (Event.device > 0)
+					Key += 11;
+				m_aInputCount[m_InputCurrent][Key].m_Presses++;
+				if(Action == IInput::FLAG_PRESS)
+					m_aInputState[m_InputCurrent][Key] = 1;
+				AddEvent(0, Key, Action);
+			}
 		}
 	}
 

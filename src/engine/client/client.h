@@ -82,6 +82,7 @@ class CClient : public IClient, public CDemoPlayer::IListner
 
 	unsigned m_SnapshotParts;
 	int64 m_LocalStartTime;
+	int m_AvailableMice;
 
 	int m_DebugFont;
 	
