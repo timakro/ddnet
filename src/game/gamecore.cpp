@@ -1,6 +1,7 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "gamecore.h"
+#include <iostream>
 
 #include <engine/shared/config.h>
 #include <engine/server/server.h>
@@ -103,7 +104,7 @@ void CCharacterCore::Reset()
 	m_Collision = true;
 }
 
-void CCharacterCore::Tick(bool UseInput, bool IsClient)
+void CCharacterCore::Tick(bool UseInput, bool IsClient, bool Freezed, bool PredictFreeze)
 {
 	float PhysSize = 28.0f;
 	int MapIndex = Collision()->GetPureMapIndex(m_Pos);;
@@ -161,6 +162,25 @@ void CCharacterCore::Tick(bool UseInput, bool IsClient)
 	float Accel = Grounded ? m_pWorld->m_Tuning[g_Config.m_ClDummy].m_GroundControlAccel : m_pWorld->m_Tuning[g_Config.m_ClDummy].m_AirControlAccel;
 	float Friction = Grounded ? m_pWorld->m_Tuning[g_Config.m_ClDummy].m_GroundFriction : m_pWorld->m_Tuning[g_Config.m_ClDummy].m_AirFriction;
 
+	if(PredictFreeze)
+	{
+		if(!Freezed && (m_TileIndex == TILE_FREEZE || m_TileFIndex == TILE_FREEZE))
+		{
+			m_FreezeTick = time_get() + time_freq() * 3;
+			Freezed = true;
+		}
+		//else if(Freezed && time_get() >= m_FreezeTick)
+		//{
+		//	std::cout <<time_get()<<std::endl;
+		//	std::cout <<m_FreezeTick<<std::endl;
+		//	Freezed = false;
+		//}
+		else if(Freezed && (m_TileIndex == TILE_UNFREEZE || m_TileFIndex == TILE_UNFREEZE))
+		{
+			Freezed = false;
+		}
+	}
+
 	// handle input
 	if(UseInput)
 	{
@@ -179,7 +199,7 @@ void CCharacterCore::Tick(bool UseInput, bool IsClient)
 		m_Angle = (int)(a*256.0f);
 
 		// handle jump
-		if(m_Input.m_Jump)
+		if(m_Input.m_Jump && !Freezed)
 		{
 			if(!(m_Jumped&1))
 			{
@@ -221,6 +241,15 @@ void CCharacterCore::Tick(bool UseInput, bool IsClient)
 			m_HookState = HOOK_IDLE;
 			m_HookPos = m_Pos;
 		}
+	}
+
+	if(Freezed)
+	{
+		m_Direction = 0;
+		m_HookedPlayer = -1;
+		m_HookState = HOOK_IDLE;
+		m_HookPos = m_Pos;
+		m_Jumped &= ~1;
 	}
 
 	// add the speed modification according to players wanted direction

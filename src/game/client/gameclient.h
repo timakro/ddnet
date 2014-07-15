@@ -281,12 +281,23 @@ public:
 	class CGhost *m_pGhost;
 	class CTeamsCore m_Teams;
 
+	inline bool IsDDRaceServer()
+	{
+		return m_IsDDRace;
+	}
+
+	static bool IsCharacterFreezed(const CNetObj_Character& pChar)
+	{
+		return (pChar.m_Weapon == WEAPON_NINJA && pChar.m_AmmoCount == 0 && (pChar.m_Emote == EMOTE_BLINK || pChar.m_Emote == EMOTE_PAIN));
+	}
+
 	int IntersectCharacter(vec2 Pos0, vec2 Pos1, vec2& NewPos, int ownID);
 
 private:
 
 	bool m_DDRaceMsgSent[2];
 	int m_ShowOthers[2];
+	bool m_IsDDRace;
 };
 
 

@@ -216,7 +216,7 @@ public:
 	void Init(CWorldCore *pWorld, CCollision *pCollision, CTeamsCore* pTeams);
 	void Init(CWorldCore *pWorld, CCollision *pCollision, CTeamsCore* pTeams, std::map<int, std::vector<vec2> > *pTeleOuts);
 	void Reset();
-	void Tick(bool UseInput, bool IsClient);
+	void Tick(bool UseInput, bool IsClient, bool Freezed = false, bool PredictFreeze = false);
 	void Move();
 
 	void Read(const CNetObj_CharacterCore *pObjCore);
@@ -232,6 +232,8 @@ public:
 	vec2 m_LastVel;
 	int m_Colliding;
 	bool m_LeftWall;
+
+	int m_FreezeTick;
 
 private:
 

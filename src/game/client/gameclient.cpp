@@ -316,6 +316,7 @@ void CGameClient::OnInit()
 	m_DDRaceMsgSent[1] = false;
 	m_ShowOthers[0] = -1;
 	m_ShowOthers[1] = -1;
+	m_IsDDRace = false;
 
 	// Set free binds to DDRace binds if it's active
 	if(!g_Config.m_ClDDRaceBindsSet && g_Config.m_ClDDRaceBinds)
@@ -413,6 +414,7 @@ void CGameClient::OnReset()
 	m_DDRaceMsgSent[1] = false;
 	m_ShowOthers[0] = -1;
 	m_ShowOthers[1] = -1;
+	m_IsDDRace = false;
 }
 
 
@@ -487,7 +489,7 @@ void CGameClient::UpdatePositions()
 }
 
 
-static void Evolve(CNetObj_Character *pCharacter, int Tick)
+static void Evolve(CNetObj_Character *pCharacter, int Tick, bool PredictFreeze)
 {
 	CWorldCore TempWorld;
 	CCharacterCore TempCore;
@@ -501,7 +503,7 @@ static void Evolve(CNetObj_Character *pCharacter, int Tick)
 	while(pCharacter->m_Tick < Tick)
 	{
 		pCharacter->m_Tick++;
-		TempCore.Tick(false, true);
+		TempCore.Tick(false, true, CGameClient::IsCharacterFreezed(*pCharacter), PredictFreeze);
 		TempCore.Move();
 		TempCore.Quantize();
 	}
@@ -704,11 +706,13 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker, bool IsDummy)
 
 		if (i <= 16)
 			m_Teams.m_IsDDRace16 = true;
+		m_IsDDRace = true;
 	}
 	else if(MsgId == NETMSGTYPE_SV_PLAYERTIME)
 	{
 		CNetMsg_Sv_PlayerTime *pMsg = (CNetMsg_Sv_PlayerTime *)pRawMsg;
 		m_aClients[pMsg->m_ClientID].m_Score = pMsg->m_Time;
+		m_IsDDRace = true;
 	}
 }
 
@@ -927,9 +931,9 @@ void CGameClient::OnNewSnapshot()
 					m_Snap.m_aCharacters[Item.m_ID].m_Prev = *((const CNetObj_Character *)pOld);
 
 					if(m_Snap.m_aCharacters[Item.m_ID].m_Prev.m_Tick)
-						Evolve(&m_Snap.m_aCharacters[Item.m_ID].m_Prev, Client()->PrevGameTick());
+						Evolve(&m_Snap.m_aCharacters[Item.m_ID].m_Prev, Client()->PrevGameTick(), m_IsDDRace);
 					if(m_Snap.m_aCharacters[Item.m_ID].m_Cur.m_Tick)
-						Evolve(&m_Snap.m_aCharacters[Item.m_ID].m_Cur, Client()->GameTick());
+						Evolve(&m_Snap.m_aCharacters[Item.m_ID].m_Cur, Client()->GameTick(), m_IsDDRace);
 				}
 			}
 			else if(Item.m_Type == NETOBJTYPE_SPECTATORINFO)
@@ -1182,16 +1186,18 @@ void CGameClient::OnPredict()
 				g_GameClient.m_aClients[c].m_PrevPredicted = *World.m_apCharacters[c];
 
 			mem_zero(&World.m_apCharacters[c]->m_Input, sizeof(World.m_apCharacters[c]->m_Input));
+
+			bool IsFreezed = m_IsDDRace && IsCharacterFreezed(m_Snap.m_aCharacters[c].m_Cur);
 			if(m_Snap.m_LocalClientID == c)
 			{
 				// apply player input
 				int *pInput = Client()->GetInput(Tick);
 				if(pInput)
 					World.m_apCharacters[c]->m_Input = *((CNetObj_PlayerInput*)pInput);
-				World.m_apCharacters[c]->Tick(true, true);
+				World.m_apCharacters[c]->Tick(true, true, IsFreezed, m_IsDDRace);
 			}
 			else
-				World.m_apCharacters[c]->Tick(false, true);
+				World.m_apCharacters[c]->Tick(false, true, IsFreezed, m_IsDDRace);
 
 		}
 
