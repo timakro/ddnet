@@ -250,7 +250,7 @@ public:
 	// TODO: move these
 	void SendSwitchTeam(int Team);
 	void SendInfo(bool Start);
-	virtual void SendDummyInfo(bool Start);
+	virtual void SendDummyInfo(bool Start, int id = 1);
 	void SendKill(int ClientID);
 
 	// pointers to all systems

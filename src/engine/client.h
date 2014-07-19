@@ -177,7 +177,7 @@ public:
 	virtual void OnActivateEditor() = 0;
 
 	virtual int OnSnapInput(int *pData) = 0;
-	virtual void SendDummyInfo(bool Start) = 0;
+	virtual void SendDummyInfo(bool Start, int id) = 0;
 	virtual void ResetDummyInput() = 0;
 
 	virtual const char *GetItemName(int Type) = 0;

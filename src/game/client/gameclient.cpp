@@ -1363,7 +1363,7 @@ void CGameClient::SendInfo(bool Start)
 	}
 }
 
-void CGameClient::SendDummyInfo(bool Start)
+void CGameClient::SendDummyInfo(bool Start, int id)
 {
 	if(Start)
 	{
@@ -1377,7 +1377,7 @@ void CGameClient::SendDummyInfo(bool Start)
 		Msg.m_ColorFeet = g_Config.m_DummyColorFeet;
 		CMsgPacker Packer(Msg.MsgID());
 		Msg.Pack(&Packer);
-		Client()->SendMsgExY(&Packer, MSGFLAG_VITAL,false, 1);
+		Client()->SendMsgExY(&Packer, MSGFLAG_VITAL,false, id);
 	}
 	else
 	{
@@ -1391,7 +1391,7 @@ void CGameClient::SendDummyInfo(bool Start)
 		Msg.m_ColorFeet = g_Config.m_DummyColorFeet;
 		CMsgPacker Packer(Msg.MsgID());
 		Msg.Pack(&Packer);
-		Client()->SendMsgExY(&Packer, MSGFLAG_VITAL,false, 1);
+		Client()->SendMsgExY(&Packer, MSGFLAG_VITAL,false, id);
 
 		// activate timer to resend the info if it gets filtered
 		//if(!m_LastSendInfo || m_LastSendInfo+time_freq()*5 < time_get())

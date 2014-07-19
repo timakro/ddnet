@@ -74,7 +74,7 @@ class CClient : public IClient, public CDemoPlayer::IListner
 		PREDICTION_MARGIN=1000/50/2, // magic network prediction value
 	};
 
-	class CNetClient m_NetClient[2];
+	class CNetClient m_NetClient[8];
 	class CDemoPlayer m_DemoPlayer;
 	class CDemoRecorder m_DemoRecorder;
 	class CServerBrowser m_ServerBrowser;
@@ -85,6 +85,7 @@ class CClient : public IClient, public CDemoPlayer::IListner
 	class CMapChecker m_MapChecker;
 
 	char m_aServerAddressStr[256];
+	char m_aDummyServerAddressStr[7][256];
 
 	unsigned m_SnapshotParts;
 	int64 m_LocalStartTime;
@@ -97,6 +98,7 @@ class CClient : public IClient, public CDemoPlayer::IListner
 	int m_RenderFrames;
 
 	NETADDR m_ServerAddress;
+	NETADDR m_DummyServerAddress[7];
 	int m_WindowMustRefocus;
 	int m_SnapCrcErrors;
 	bool m_AutoScreenshotRecycle;
@@ -104,9 +106,9 @@ class CClient : public IClient, public CDemoPlayer::IListner
 	bool m_SoundInitFailed;
 	bool m_ResortServerBrowser;
 
-	int m_AckGameTick[2];
-	int m_CurrentRecvTick[2];
-	int m_RconAuthed[2];
+	int m_AckGameTick[8];
+	int m_CurrentRecvTick[8];
+	int m_RconAuthed[8];
 	int m_UseTempRconCommands;
 
 	// version-checking
@@ -132,8 +134,8 @@ class CClient : public IClient, public CDemoPlayer::IListner
 	int m_MapdownloadTotalsize;
 
 	// time
-	CSmoothTime m_GameTime[2];
-	CSmoothTime m_PredictedTime;
+	CSmoothTime m_GameTime[8];
+	CSmoothTime m_PredictedTime[8];
 
 	// input
 	struct // TODO: handle input better
@@ -142,9 +144,9 @@ class CClient : public IClient, public CDemoPlayer::IListner
 		int m_Tick; // the tick that the input is for
 		int64 m_PredictedTime; // prediction latency when we sent this input
 		int64 m_Time;
-	} m_aInputs[2][200];
+	} m_aInputs[8][200];
 
-	int m_CurrentInput[2];
+	int m_CurrentInput[8];
 	bool m_LastDummy;
 	bool m_LastDummy2;
 	CNetObj_PlayerInput DummyInput;
@@ -156,14 +158,14 @@ class CClient : public IClient, public CDemoPlayer::IListner
 	CGraph m_FpsGraph;
 
 	// the game snapshots are modifiable by the game
-	class CSnapshotStorage m_SnapshotStorage[2];
-	CSnapshotStorage::CHolder *m_aSnapshots[2][NUM_SNAPSHOT_TYPES];
+	class CSnapshotStorage m_SnapshotStorage[8];
+	CSnapshotStorage::CHolder *m_aSnapshots[8][NUM_SNAPSHOT_TYPES];
 
-	int m_RecivedSnapshots[2];
+	int m_RecivedSnapshots[8];
 	char m_aSnapshotIncommingData[CSnapshot::MAX_SIZE];
 
 	class CSnapshotStorage::CHolder m_aDemorecSnapshotHolders[NUM_SNAPSHOT_TYPES];
-	char *m_aDemorecSnapshotData[NUM_SNAPSHOT_TYPES][2][CSnapshot::MAX_SIZE];
+	char *m_aDemorecSnapshotData[NUM_SNAPSHOT_TYPES][8][CSnapshot::MAX_SIZE];
 
 	class CSnapshotDelta m_SnapshotDelta;
 
@@ -279,7 +281,7 @@ public:
 
 	void ProcessConnlessPacket(CNetChunk *pPacket);
 	void ProcessServerPacket(CNetChunk *pPacket);
-	void ProcessServerPacketDummy(CNetChunk *pPacket);
+	void ProcessServerPacketDummy(CNetChunk *pPacket, int id);
 
 	virtual int MapDownloadAmount() { return m_MapdownloadAmount; }
 	virtual int MapDownloadTotalsize() { return m_MapdownloadTotalsize; }
