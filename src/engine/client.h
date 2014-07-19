@@ -16,20 +16,20 @@ protected:
 	int m_State;
 
 	// quick access to time variables
-	int m_PrevGameTick[2];
-	int m_CurGameTick[2];
-	float m_GameIntraTick[2];
-	float m_GameTickTime[2];
+	int m_PrevGameTick[8];
+	int m_CurGameTick[8];
+	float m_GameIntraTick[8];
+	float m_GameTickTime[8];
 
-	int m_PredTick[2];
-	float m_PredIntraTick[2];
+	int m_PredTick[8];
+	float m_PredIntraTick[8];
 
 	float m_LocalTime;
 	float m_RenderFrameTime;
 
 	int m_GameTickSpeed;
 public:
-	int m_LocalIDs[2];
+	int m_LocalIDs[8];
 	char m_aNews[NEWS_SIZE];
 
 	class CSnapItem

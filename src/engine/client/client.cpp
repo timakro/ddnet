@@ -276,10 +276,30 @@ CClient::CClient() : m_DemoPlayer(&m_SnapshotDelta), m_DemoRecorder(&m_SnapshotD
 
 	m_AckGameTick[0] = -1;
 	m_AckGameTick[1] = -1;
+	m_AckGameTick[2] = -1;
+	m_AckGameTick[3] = -1;
+	m_AckGameTick[4] = -1;
+	m_AckGameTick[5] = -1;
+	m_AckGameTick[6] = -1;
+	m_AckGameTick[7] = -1;
+
 	m_CurrentRecvTick[0] = 0;
 	m_CurrentRecvTick[1] = 0;
+	m_CurrentRecvTick[2] = 0;
+	m_CurrentRecvTick[3] = 0;
+	m_CurrentRecvTick[4] = 0;
+	m_CurrentRecvTick[5] = 0;
+	m_CurrentRecvTick[6] = 0;
+	m_CurrentRecvTick[7] = 0;
+
 	m_RconAuthed[0] = 0;
 	m_RconAuthed[1] = 0;
+	m_RconAuthed[2] = 0;
+	m_RconAuthed[3] = 0;
+	m_RconAuthed[4] = 0;
+	m_RconAuthed[5] = 0;
+	m_RconAuthed[6] = 0;
+	m_RconAuthed[7] = 0;
 
 	// version-checking
 	m_aVersionStr[0] = '0';
@@ -308,10 +328,25 @@ CClient::CClient() : m_DemoPlayer(&m_SnapshotDelta), m_DemoRecorder(&m_SnapshotD
 
 	m_CurrentInput[0] = 0;
 	m_CurrentInput[1] = 0;
+	m_CurrentInput[2] = 0;
+	m_CurrentInput[3] = 0;
+	m_CurrentInput[4] = 0;
+	m_CurrentInput[5] = 0;
+	m_CurrentInput[6] = 0;
+	m_CurrentInput[7] = 0;
+
 	m_LastDummy = 0;
 	m_LastDummy2 = 0;
+
 	m_LocalIDs[0] = 0;
 	m_LocalIDs[1] = 0;
+	m_LocalIDs[2] = 0;
+	m_LocalIDs[3] = 0;
+	m_LocalIDs[4] = 0;
+	m_LocalIDs[5] = 0;
+	m_LocalIDs[6] = 0;
+	m_LocalIDs[7] = 0;
+
 	m_Fire = 0;
 
 	mem_zero(&m_aInputs, sizeof(m_aInputs));
@@ -330,10 +365,24 @@ CClient::CClient() : m_DemoPlayer(&m_SnapshotDelta), m_DemoRecorder(&m_SnapshotD
 	m_aDummyServerAddressStr[6][0] = 0;
 
 	mem_zero(m_aSnapshots, sizeof(m_aSnapshots));
+
 	m_SnapshotStorage[0].Init();
 	m_SnapshotStorage[1].Init();
+	m_SnapshotStorage[2].Init();
+	m_SnapshotStorage[3].Init();
+	m_SnapshotStorage[4].Init();
+	m_SnapshotStorage[5].Init();
+	m_SnapshotStorage[6].Init();
+	m_SnapshotStorage[7].Init();
+
 	m_RecivedSnapshots[0] = 0;
 	m_RecivedSnapshots[1] = 0;
+	m_RecivedSnapshots[2] = 0;
+	m_RecivedSnapshots[3] = 0;
+	m_RecivedSnapshots[4] = 0;
+	m_RecivedSnapshots[5] = 0;
+	m_RecivedSnapshots[6] = 0;
+	m_RecivedSnapshots[7] = 0;
 
 	m_VersionInfo.m_State = CVersionInfo::STATE_INIT;
 
@@ -603,9 +652,21 @@ void CClient::OnEnterGame()
 	{
 		m_aInputs[0][i].m_Tick = -1;
 		m_aInputs[1][i].m_Tick = -1;
+		m_aInputs[2][i].m_Tick = -1;
+		m_aInputs[3][i].m_Tick = -1;
+		m_aInputs[4][i].m_Tick = -1;
+		m_aInputs[5][i].m_Tick = -1;
+		m_aInputs[6][i].m_Tick = -1;
+		m_aInputs[7][i].m_Tick = -1;
 	}
 	m_CurrentInput[0] = 0;
 	m_CurrentInput[1] = 0;
+	m_CurrentInput[2] = 0;
+	m_CurrentInput[3] = 0;
+	m_CurrentInput[4] = 0;
+	m_CurrentInput[5] = 0;
+	m_CurrentInput[6] = 0;
+	m_CurrentInput[7] = 0;
 
 	// reset snapshots
 	m_aSnapshots[g_Config.m_ClDummy][SNAP_CURRENT] = 0;
@@ -2113,8 +2174,8 @@ void CClient::ProcessServerPacketDummy(CNetChunk *pPacket, int id)
 					if(m_RecivedSnapshots[id] == 2)
 					{
 						// start at 200ms and work from there
-						//m_PredictedTime[id].Init(GameTick*time_freq()/50);
-						//m_PredictedTime[id].SetAdjustSpeed(1, 1000.0f);
+						m_PredictedTime[id].Init(GameTick*time_freq()/50);
+						m_PredictedTime[id].SetAdjustSpeed(1, 1000.0f);
 						m_GameTime[id].Init((GameTick-1)*time_freq()/50);
 						m_aSnapshots[id][SNAP_PREV] = m_SnapshotStorage[id].m_pFirst;
 						m_aSnapshots[id][SNAP_CURRENT] = m_SnapshotStorage[id].m_pLast;
@@ -2304,7 +2365,7 @@ void CClient::Update()
 					m_CurGameTick[g_Config.m_ClDummy] = m_aSnapshots[g_Config.m_ClDummy][SNAP_CURRENT]->m_Tick;
 					m_PrevGameTick[g_Config.m_ClDummy] = m_aSnapshots[g_Config.m_ClDummy][SNAP_PREV]->m_Tick;
 
-					if (m_LastDummy2 == (bool)g_Config.m_ClDummy && m_aSnapshots[g_Config.m_ClDummy][SNAP_CURRENT] && m_aSnapshots[g_Config.m_ClDummy][SNAP_PREV])
+					if (m_LastDummy2 == g_Config.m_ClDummy && m_aSnapshots[g_Config.m_ClDummy][SNAP_CURRENT] && m_aSnapshots[g_Config.m_ClDummy][SNAP_PREV])
 					{
 						GameClient()->OnNewSnapshot();
 						Repredict = 1;
@@ -2317,7 +2378,7 @@ void CClient::Update()
 				break;
 		}
 
-		if (m_LastDummy2 != (bool)g_Config.m_ClDummy)
+		if (m_LastDummy2 != g_Config.m_ClDummy)
 		{
 			m_LastDummy2 = g_Config.m_ClDummy;
 		}
@@ -2461,7 +2522,7 @@ void CClient::InitInterfaces()
 #endif
 	m_pStorage = Kernel()->RequestInterface<IStorage>();
 
-	for(int i=0;i<2;i++)
+	for(int i=0;i<8;i++)
 	{
 		m_ServerBrowser.SetBaseInfo(&m_NetClient[i], m_pGameClient->NetVersion());
 	}
@@ -2525,7 +2586,7 @@ void CClient::Run()
 			mem_zero(&BindAddr, sizeof(BindAddr));
 			BindAddr.type = NETTYPE_ALL;
 		}
-		for(int i = 0; i < 2; i++)
+		for(int i = 0; i < 8; i++)
 		{
 			if(!m_NetClient[i].Open(BindAddr, 0))
 			{

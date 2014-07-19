@@ -69,7 +69,7 @@ class CGameClient : public IGameClient
 	void UpdatePositions();
 
 	int m_PredictedTick;
-	int m_LastNewPredictedTick[2];
+	int m_LastNewPredictedTick[8];
 
 	int64 m_LastSendInfo;
 
@@ -112,7 +112,7 @@ public:
 	int m_FlagDropTick[2];
 
 	// TODO: move this
-	CTuningParams m_Tuning[2];
+	CTuningParams m_Tuning[8];
 
 	enum
 	{
@@ -151,7 +151,7 @@ public:
 
 		int m_LocalClientID;
 		int m_NumPlayers;
-		int m_aTeamSize[2];
+		int m_aTeamSize[8];
 
 		// spectate data
 		struct CSpectateInfo
@@ -285,8 +285,8 @@ public:
 
 private:
 
-	bool m_DDRaceMsgSent[2];
-	int m_ShowOthers[2];
+	bool m_DDRaceMsgSent[8];
+	int m_ShowOthers[8];
 };
 
 

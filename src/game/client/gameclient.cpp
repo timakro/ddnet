@@ -314,8 +314,20 @@ void CGameClient::OnInit()
 
 	m_DDRaceMsgSent[0] = false;
 	m_DDRaceMsgSent[1] = false;
+	m_DDRaceMsgSent[2] = false;
+	m_DDRaceMsgSent[3] = false;
+	m_DDRaceMsgSent[4] = false;
+	m_DDRaceMsgSent[5] = false;
+	m_DDRaceMsgSent[6] = false;
+	m_DDRaceMsgSent[7] = false;
 	m_ShowOthers[0] = -1;
 	m_ShowOthers[1] = -1;
+	m_ShowOthers[2] = -1;
+	m_ShowOthers[3] = -1;
+	m_ShowOthers[4] = -1;
+	m_ShowOthers[5] = -1;
+	m_ShowOthers[6] = -1;
+	m_ShowOthers[7] = -1;
 
 	// Set free binds to DDRace binds if it's active
 	if(!g_Config.m_ClDDRaceBindsSet && g_Config.m_ClDDRaceBinds)
@@ -395,6 +407,12 @@ void CGameClient::OnReset()
 	// clear out the invalid pointers
 	m_LastNewPredictedTick[0] = -1;
 	m_LastNewPredictedTick[1] = -1;
+	m_LastNewPredictedTick[2] = -1;
+	m_LastNewPredictedTick[3] = -1;
+	m_LastNewPredictedTick[4] = -1;
+	m_LastNewPredictedTick[5] = -1;
+	m_LastNewPredictedTick[6] = -1;
+	m_LastNewPredictedTick[7] = -1;
 	mem_zero(&g_GameClient.m_Snap, sizeof(g_GameClient.m_Snap));
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -411,8 +429,20 @@ void CGameClient::OnReset()
 	m_Teams.Reset();
 	m_DDRaceMsgSent[0] = false;
 	m_DDRaceMsgSent[1] = false;
+	m_DDRaceMsgSent[2] = false;
+	m_DDRaceMsgSent[3] = false;
+	m_DDRaceMsgSent[4] = false;
+	m_DDRaceMsgSent[5] = false;
+	m_DDRaceMsgSent[6] = false;
+	m_DDRaceMsgSent[7] = false;
 	m_ShowOthers[0] = -1;
 	m_ShowOthers[1] = -1;
+	m_ShowOthers[2] = -1;
+	m_ShowOthers[3] = -1;
+	m_ShowOthers[4] = -1;
+	m_ShowOthers[5] = -1;
+	m_ShowOthers[6] = -1;
+	m_ShowOthers[7] = -1;
 }
 
 
@@ -631,19 +661,19 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker, bool IsDummy)
 
 	if(IsDummy)
 	{
-		if(MsgId == NETMSGTYPE_SV_CHAT
-			&& Client()->m_LocalIDs[0] >= 0
-			&& Client()->m_LocalIDs[1] >= 0)
+		if(MsgId == NETMSGTYPE_SV_CHAT)
+		//	&& Client()->m_LocalIDs[0] >= 0
+		//	&& Client()->m_LocalIDs[1] >= 0)
 		{
 			CNetMsg_Sv_Chat *pMsg = (CNetMsg_Sv_Chat *)pRawMsg;
 
-			if((pMsg->m_Team == 1
-					&& (m_aClients[Client()->m_LocalIDs[0]].m_Team != m_aClients[Client()->m_LocalIDs[1]].m_Team
-						|| m_Teams.Team(Client()->m_LocalIDs[0]) != m_Teams.Team(Client()->m_LocalIDs[1])))
-				|| pMsg->m_Team > 1)
-			{
+			//if((pMsg->m_Team == 1
+			//		&& (m_aClients[Client()->m_LocalIDs[0]].m_Team != m_aClients[Client()->m_LocalIDs[1]].m_Team
+			//			|| m_Teams.Team(Client()->m_LocalIDs[0]) != m_Teams.Team(Client()->m_LocalIDs[1])))
+			//	|| pMsg->m_Team > 1)
+			//{
 				m_pChat->OnMessage(MsgId, pRawMsg);
-			}
+			//}
 		}
 		return; // no need of all that stuff for the dummy
 	}

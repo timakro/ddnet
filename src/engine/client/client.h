@@ -147,8 +147,8 @@ class CClient : public IClient, public CDemoPlayer::IListner
 	} m_aInputs[8][200];
 
 	int m_CurrentInput[8];
-	bool m_LastDummy;
-	bool m_LastDummy2;
+	int m_LastDummy;
+	int m_LastDummy2;
 	CNetObj_PlayerInput DummyInput;
 	CNetObj_PlayerInput HammerInput;
 
