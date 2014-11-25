@@ -161,6 +161,12 @@ void CCharacterCore::Tick(bool UseInput, bool IsClient)
 	float Accel = Grounded ? m_pWorld->m_Tuning[g_Config.m_ClDummy].m_GroundControlAccel : m_pWorld->m_Tuning[g_Config.m_ClDummy].m_AirControlAccel;
 	float Friction = Grounded ? m_pWorld->m_Tuning[g_Config.m_ClDummy].m_GroundFriction : m_pWorld->m_Tuning[g_Config.m_ClDummy].m_AirFriction;
 
+	m_Tick = (m_Tick + 1) % 7;
+	if(m_NumHooks > 0 && m_Tick == 0)
+	{
+		m_NumHooks--;
+	}
+
 	// handle input
 	if(UseInput)
 	{
@@ -207,12 +213,20 @@ void CCharacterCore::Tick(bool UseInput, bool IsClient)
 		{
 			if(m_HookState == HOOK_IDLE)
 			{
-				m_HookState = HOOK_FLYING;
-				m_HookPos = m_Pos+TargetDirection*PhysSize*1.5f;
-				m_HookDir = TargetDirection;
-				m_HookedPlayer = -1;
-				m_HookTick = 0;
-				m_TriggeredEvents |= COREEVENT_HOOK_LAUNCH;
+				m_NumHooks += 1;
+				if(m_NumHooks < 5)
+				{
+					m_HookState = HOOK_FLYING;
+					m_HookPos = m_Pos+TargetDirection*PhysSize*1.5f;
+					m_HookDir = TargetDirection;
+					m_HookedPlayer = -1;
+					m_HookTick = 0;
+					m_TriggeredEvents |= COREEVENT_HOOK_LAUNCH;
+				}
+				else
+				{
+					m_NumHooks = 5;
+				}
 			}
 		}
 		else

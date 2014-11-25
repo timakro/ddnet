@@ -227,6 +227,8 @@ public:
 
 	int m_Id;
 	bool m_pReset;
+	int m_NumHooks;
+	int m_Tick;
 	class CCollision *Collision() { return m_pCollision; }
 
 	vec2 m_LastVel;
