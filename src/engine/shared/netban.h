@@ -153,8 +153,6 @@ protected:
 
 	class IConsole *m_pConsole;
 	class IStorage *m_pStorage;
-	CBanAddrPool m_BanAddrPool;
-	CBanRangePool m_BanRangePool;
 	NETADDR m_LocalhostIPV4, m_LocalhostIPV6;
 
 public:
@@ -165,6 +163,11 @@ public:
 		MSGTYPE_BANADD,
 		MSGTYPE_BANREM,
 	};
+
+	CBanAddrPool m_BanAddrPool;
+	CBanAddrPool m_PunishAddrPool;
+	CBanRangePool m_BanRangePool;
+	template<class T> int Punish(T *pBanPool, const typename T::CDataType *pData, int Seconds, const char *pReason);
 
 	class IConsole *Console() const { return m_pConsole; }
 	class IStorage *Storage() const { return m_pStorage; }
@@ -190,6 +193,105 @@ public:
 	static void ConBansSave(class IConsole::IResult *pResult, void *pUser);
 };
 
+template<class T, int HashCount>
+void CNetBan::CBanPool<T, HashCount>::Update(CBan<CDataType> *pBan, const CBanInfo *pInfo)
+{
+	pBan->m_Info = *pInfo;
+
+	// remove from used list
+	if(pBan->m_pNext)
+		pBan->m_pNext->m_pPrev = pBan->m_pPrev;
+	if(pBan->m_pPrev)
+		pBan->m_pPrev->m_pNext = pBan->m_pNext;
+	else
+		m_pFirstUsed = pBan->m_pNext;
+
+	// insert it into the used list
+	if(m_pFirstUsed)
+	{
+		for(CBan<T> *p = m_pFirstUsed; ; p = p->m_pNext)
+		{
+			if(p->m_Info.m_Expires == CBanInfo::EXPIRES_NEVER || (pInfo->m_Expires != CBanInfo::EXPIRES_NEVER && pInfo->m_Expires <= p->m_Info.m_Expires))
+			{
+				// insert before
+				pBan->m_pNext = p;
+				pBan->m_pPrev = p->m_pPrev;
+				if(p->m_pPrev)
+					p->m_pPrev->m_pNext = pBan;
+				else
+					m_pFirstUsed = pBan;
+				p->m_pPrev = pBan;
+				break;
+			}
+
+			if(!p->m_pNext)
+			{
+				// last entry
+				p->m_pNext = pBan;
+				pBan->m_pPrev = p;
+				pBan->m_pNext = 0;
+				break;
+			}
+		}
+	}
+	else
+	{
+		m_pFirstUsed = pBan;
+		pBan->m_pNext = pBan->m_pPrev = 0;
+	}
+}
+
+template<class T>
+int CNetBan::Punish(T *pBanPool, const typename T::CDataType *pData, int Seconds, const char *pReason)
+{
+	// do not punish localhost
+	if(NetMatch(pData, &m_LocalhostIPV4) || NetMatch(pData, &m_LocalhostIPV6))
+	{
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban failed (localhost)");
+		return -1;
+	}
+
+	int Stamp = time_timestamp() + Seconds;
+
+	// set up info
+	CBanInfo Info = {0};
+	Info.m_Expires = Stamp;
+	str_copy(Info.m_aReason, pReason, sizeof(Info.m_aReason));
+
+	// check if it already exists
+	CNetHash NetHash(pData);
+	CBan<typename T::CDataType> *pBan = pBanPool->Find(pData, &NetHash);
+	if(pBan)
+	{
+		Info.m_Expires += Seconds;
+
+		if(Info.m_Expires > time_timestamp() + 300)
+		{ // make it a real ban
+		}
+		else
+		{
+			// adjust the punishment
+			pBanPool->Update(pBan, &Info);
+			char aBuf[128];
+			MakeBanInfo(pBan, aBuf, sizeof(aBuf), MSGTYPE_LIST);
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", aBuf);
+		}
+		return 1;
+	}
+
+	// add ban and print result
+	pBan = pBanPool->Add(pData, &Info, &NetHash);
+	if(pBan)
+	{
+		char aBuf[128];
+		MakeBanInfo(pBan, aBuf, sizeof(aBuf), MSGTYPE_BANADD);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", aBuf);
+		return 0;
+	}
+	else
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban failed (full banlist)");
+	return -1;
+}
 
 template<class T>
 void CNetBan::MakeBanInfo(const CBan<T> *pBan, char *pBuf, unsigned BuffSize, int Type) const

@@ -130,6 +130,8 @@ int CNetServer::Recv(CNetChunk *pChunk)
 				// TODO: check size here
 				if(m_RecvUnpacker.m_Data.m_Flags&NET_PACKETFLAG_CONTROL && m_RecvUnpacker.m_Data.m_aChunkData[0] == NET_CTRLMSG_CONNECT)
 				{
+					NetBan()->Punish(&NetBan()->m_PunishAddrPool, &Addr, 60, "");
+
 					Found = false;
 
 					// check if we already got this client
