@@ -1351,3 +1351,131 @@ void CGameContext::ConTopPoints(IConsole::IResult *pResult, void *pUserData)
 		pSelf->m_apPlayers[pResult->m_ClientID]->m_LastSQLQuery = pSelf->Server()->Tick();
 }
 #endif
+
+void CGameContext::ConBat(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	if (!CheckClientID(pResult->m_ClientID))
+		return;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if (!pPlayer)
+		return;
+	pSelf->SendChatTarget(pPlayer->GetCID(), "█▄                                                               ▄▟▌");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▐██▖       ▌              ▌       ▟██       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ███       █▄▟▌▐██▌       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▐██▌▜▟▟▘███              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▜██▖▀▘▟██▘              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ███████▌                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▝▜████▀                            ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                                   ▝█▛                                          ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▝                                                 ");
+}
+void CGameContext::ConGhost(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	if (!CheckClientID(pResult->m_ClientID))
+		return;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if (!pPlayer)
+		return;
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▞▀▀▄                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗▘                            ▚              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▗▖▗▖       ▝▖       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▌█▌▐█              ▌       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▌▀              ▀              ▌       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▗▚       ▐▌▗▀       ▌       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▝▟▙▖       ▐▞       ▝▖");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▘▘▝▀▄▄▄▞       ");
+}
+void CGameContext::ConPumpkin(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	if (!CheckClientID(pResult->m_ClientID))
+		return;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if (!pPlayer)
+		return;
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▗▀▖                                   ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▌▞                                          ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▞▀▚▌▙▀▀▄                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▚       ▗▘▝       ▚       ▗▀▖       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▐▗▘       ▖       ▐              ▖       ▚▐       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌       ▟█▖▝       ▟█▖       ▌▌");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌       ▀▀▘▗       ▀▀▘       ▌▌");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌                     ▗█▙                            ▌▌");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▌              ▝▙                     ▗▛                     ▌");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▐▝▖       ▝▜██▀              ▞▐       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▚▞                                                 ▝▄▘       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▚▄▄▞▄▄▄▀                     ");
+}
+void CGameContext::ConSkull(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	if (!CheckClientID(pResult->m_ClientID))
+		return;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if (!pPlayer)
+		return;
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▄███▙▖                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗███████▙              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▗█████████▙       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▟██████████▖");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "███████████▌");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "█▜████████▜▌");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "█▞█▙▄▜▚▄█▛▟▌");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▜▌▛▀▜▛█▀▀▌█▘");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▝▞                     ▟▖              ▝▞       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▗▌              ▗▛▙                     ▙       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▐▛▄▞▜       ▐▀▄▞█       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▝█▄▐█▗▐█▗▟▛       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▝▘▜████▘▀              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▐▐▌█▐       ▌              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▗▗▖▄▗       ▌              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▟▟▙█▟▞                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▀███▛▘                     ");
+}
+void CGameContext::ConWitch(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	if (!CheckClientID(pResult->m_ClientID))
+		return;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if (!pPlayer)
+		return;
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▄█▙▖                                          ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▛▜███▙                                   ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                            ▜███▌▗▖              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                            ▟████▗█              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗       ██████▘              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▐▙█████▙       ▗       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▛██████▞▞       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▚▜███████▚▘");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▘▚▚▜███▚▚▘▘");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗▟▙▚▟██▌       ▘              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▜██████                            ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▜█████                            ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▄▟█▙▝████▄█▀▘");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▝▜█▛▀▜██▛                            ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                                   ▛       ▛                                   ");
+}
+void CGameContext::ConDoNe(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *) pUserData;
+	if (!CheckClientID(pResult->m_ClientID))
+		return;
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if (!pPlayer)
+		return;
+	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▗▀▙▖                            ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▙▞       ▝▖                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▄▘              ▚                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▖▄              ▐                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▘▀              ▙                     ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▀▞▀▘▞       ▀▖       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▗▘       ▞▀▀       ▖       ▚       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▐       ▜▌                     █▘▐       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▝▄▞▌                     ▛▄▞       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▞              ▖       ▝▖              ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▗▞▘       ▞▝▖       ▀▄       ");
+	pSelf->SendChatTarget(pPlayer->GetCID(), "▙▄▄▄▌       ▙▄▄▄▌");
+}

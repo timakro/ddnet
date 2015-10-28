@@ -1541,57 +1541,21 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
 			Server()->SetClientCountry(ClientID, pMsg->m_Country);
-			str_copy(pPlayer->m_TeeInfos.m_SkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_SkinName));
-			pPlayer->m_TeeInfos.m_UseCustomColor = pMsg->m_UseCustomColor;
-			pPlayer->m_TeeInfos.m_ColorBody = pMsg->m_ColorBody;
-			pPlayer->m_TeeInfos.m_ColorFeet = pMsg->m_ColorFeet;
+			ChangeSkin(pPlayer, (char*)pMsg->m_pSkin, false);
 			//m_pController->OnPlayerInfoChange(pPlayer);
 		}
 		else if (MsgID == NETMSGTYPE_CL_EMOTICON && !m_World.m_Paused)
 		{
-			CNetMsg_Cl_Emoticon *pMsg = (CNetMsg_Cl_Emoticon *)pRawMsg;
-
 			if(g_Config.m_SvSpamprotection && pPlayer->m_LastEmote && pPlayer->m_LastEmote+Server()->TickSpeed()*g_Config.m_SvEmoticonDelay > Server()->Tick())
 				return;
 
 			pPlayer->m_LastEmote = Server()->Tick();
 
-			SendEmoticon(ClientID, pMsg->m_Emoticon);
+			SendEmoticon(ClientID, EMOTICON_GHOST);
 			CCharacter* pChr = pPlayer->GetCharacter();
 			if(pChr && g_Config.m_SvEmotionalTees && pPlayer->m_EyeEmote)
 			{
-				switch(pMsg->m_Emoticon)
-				{
-				case EMOTICON_EXCLAMATION:
-				case EMOTICON_GHOST:
-				case EMOTICON_QUESTION:
-				case EMOTICON_WTF:
-						pChr->SetEmoteType(EMOTE_SURPRISE);
-						break;
-				case EMOTICON_DOTDOT:
-				case EMOTICON_DROP:
-				case EMOTICON_ZZZ:
-						pChr->SetEmoteType(EMOTE_BLINK);
-						break;
-				case EMOTICON_EYES:
-				case EMOTICON_HEARTS:
-				case EMOTICON_MUSIC:
-						pChr->SetEmoteType(EMOTE_HAPPY);
-						break;
-				case EMOTICON_OOP:
-				case EMOTICON_SORRY:
-				case EMOTICON_SUSHI:
-						pChr->SetEmoteType(EMOTE_PAIN);
-						break;
-				case EMOTICON_DEVILTEE:
-				case EMOTICON_SPLATTEE:
-				case EMOTICON_ZOMG:
-						pChr->SetEmoteType(EMOTE_ANGRY);
-						break;
-					default:
-						pChr->SetEmoteType(EMOTE_NORMAL);
-						break;
-				}
+				pChr->SetEmoteType(EMOTE_SURPRISE);
 				pChr->SetEmoteStop(Server()->Tick() + 2 * Server()->TickSpeed());
 			}
 		}
@@ -1635,10 +1599,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		Server()->SetClientName(ClientID, pMsg->m_pName);
 		Server()->SetClientClan(ClientID, pMsg->m_pClan);
 		Server()->SetClientCountry(ClientID, pMsg->m_Country);
-		str_copy(pPlayer->m_TeeInfos.m_SkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_SkinName));
-		pPlayer->m_TeeInfos.m_UseCustomColor = pMsg->m_UseCustomColor;
-		pPlayer->m_TeeInfos.m_ColorBody = pMsg->m_ColorBody;
-		pPlayer->m_TeeInfos.m_ColorFeet = pMsg->m_ColorFeet;
+		ChangeSkin(pPlayer, (char*)pMsg->m_pSkin, true);
 		//m_pController->OnPlayerInfoChange(pPlayer);
 
 		// send clear vote options
@@ -3111,4 +3072,35 @@ void CGameContext::List(int ClientID, const char* filter)
 		SendChatTarget(ClientID, buf);
 	str_format(buf, sizeof(buf), "%d players online", total);
 	SendChatTarget(ClientID, buf);
+}
+
+void CGameContext::ChangeSkin(CPlayer *pPlayer, char* newskin, bool init) {
+	int skinnamelen = sizeof(pPlayer->m_TeeInfos.m_SkinName);
+
+	char allowed[][skinnamelen] = {"red_flame", "Bat", "monstee"};
+	int allowed_len = sizeof(allowed) / skinnamelen;
+
+	char known[][skinnamelen] = {"red_flame", "Bat"};
+	int known_len = sizeof(known) / skinnamelen;
+
+	bool match = false;
+	for(int i = 0; i < allowed_len; i++) {
+		if(!str_comp(allowed[i], newskin)) {
+			match = true;
+			break;
+		}
+	}
+	if(!match) {
+		if(!init)
+			return;
+		unsigned char ran = 0;
+		if(!secure_random_init())
+			secure_random_fill(&ran, sizeof(ran));
+		unsigned char i = floor(ran / 256. * known_len);
+		newskin = known[i];
+	}
+	str_copy(pPlayer->m_TeeInfos.m_SkinName, newskin, sizeof(pPlayer->m_TeeInfos.m_SkinName));
+	pPlayer->m_TeeInfos.m_UseCustomColor = false;
+	pPlayer->m_TeeInfos.m_ColorBody = 0;
+	pPlayer->m_TeeInfos.m_ColorFeet = 0;
 }

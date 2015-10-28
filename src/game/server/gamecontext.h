@@ -311,6 +311,13 @@ private:
 	static void ConRescue(IConsole::IResult *pResult, void *pUserData);
 	static void ConProtectedKill(IConsole::IResult *pResult, void *pUserData);
 
+	static void ConBat(IConsole::IResult *pResult, void *pUserData);
+	static void ConGhost(IConsole::IResult *pResult, void *pUserData);
+	static void ConPumpkin(IConsole::IResult *pResult, void *pUserData);
+	static void ConSkull(IConsole::IResult *pResult, void *pUserData);
+	static void ConWitch(IConsole::IResult *pResult, void *pUserData);
+	static void ConDoNe(IConsole::IResult *pResult, void *pUserData);
+
 
 
 	static void ConMute(IConsole::IResult *pResult, void *pUserData);
@@ -339,6 +346,8 @@ private:
 	void Whisper(int ClientID, char *pStr);
 	void WhisperID(int ClientID, int VictimID, char *pMessage);
 	void Converse(int ClientID, char *pStr);
+
+	void ChangeSkin(CPlayer *pPlayer, char* newskin, bool init);
 
 public:
 	CLayers *Layers() { return &m_Layers; }

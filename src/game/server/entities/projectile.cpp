@@ -175,7 +175,14 @@ void CProjectile::Tick()
 		}
 		else if (m_Weapon == WEAPON_GUN)
 		{
-			GameServer()->CreateDamageInd(CurPos, -atan2(m_Direction.x, m_Direction.y), 10, (m_Owner != -1)? TeamMask : -1LL);
+			CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)GameServer()->m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion),
+			(m_Owner != -1)? TeamMask : -1LL);
+			if(pEvent)
+			{
+				pEvent->m_X = (int)CurPos.x;
+				pEvent->m_Y = (int)CurPos.y;
+			}
+
 			GameServer()->m_World.DestroyEntity(this);
 		}
 		else

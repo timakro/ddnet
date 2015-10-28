@@ -46,6 +46,13 @@ CHAT_COMMAND("rescue", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConRescue, this, "Telepo
 
 CHAT_COMMAND("kill", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConProtectedKill, this, "Kill yourself")
 
+CHAT_COMMAND("bat", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConBat, this, "")
+CHAT_COMMAND("ghost", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConGhost, this, "")
+CHAT_COMMAND("pumpkin", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConPumpkin, this, "")
+CHAT_COMMAND("skull", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConSkull, this, "")
+CHAT_COMMAND("witch", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConWitch, this, "")
+CHAT_COMMAND("DoNe", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConDoNe, this, "")
+
 #if defined(CONF_SQL)
 CHAT_COMMAND("times", "?s?i", CFGFLAG_CHAT|CFGFLAG_SERVER, ConTimes, this, "/times ?s?i shows last 5 times of the server or of a player beginning with name s starting with time i (i = 1 by default)")
 CHAT_COMMAND("points", "?r", CFGFLAG_CHAT|CFGFLAG_SERVER, ConPoints, this, "Shows the global points of a player beginning with name r (your rank by default)")
