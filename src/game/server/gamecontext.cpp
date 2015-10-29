@@ -3075,7 +3075,7 @@ void CGameContext::List(int ClientID, const char* filter)
 }
 
 void CGameContext::ChangeSkin(CPlayer *pPlayer, char* newskin, bool init) {
-	int skinnamelen = sizeof(pPlayer->m_TeeInfos.m_SkinName);
+	const int skinnamelen = sizeof(pPlayer->m_TeeInfos.m_SkinName);
 
 	char allowed[][skinnamelen] = {"red_flame", "Bat", "monstee"};
 	int allowed_len = sizeof(allowed) / skinnamelen;
