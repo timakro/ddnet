@@ -2031,7 +2031,7 @@ void CCharacter::DDRaceTick()
 	if(!secure_random_init()) {
 		unsigned char uran;
 		secure_random_fill(&uran, sizeof(uran));
-		if(uran > 250) {
+		if(uran > 254) {
 			secure_random_fill(&uran, sizeof(uran));
 			float angle = uran / 256. * 2*pi;
 
