@@ -1,3 +1,4 @@
+#include <iostream>
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <base/tl/sorted_array.h>
@@ -3077,10 +3078,10 @@ void CGameContext::List(int ClientID, const char* filter)
 void CGameContext::ChangeSkin(CPlayer *pPlayer, char* newskin, bool init) {
 	const int skinnamelen = sizeof(pPlayer->m_TeeInfos.m_SkinName);
 
-	char allowed[][skinnamelen] = {"red_flame", "Bat", "monstee"};
+	char allowed[][skinnamelen] = {"2005tfo", "aqua", "Bat", "beast", "blackangel", "Black Phantom", "Black Phantom heinrich5991", "blacktee", "Blind r0xr", "bomb", "Colory BLACK", "Cyclops", "darky", "dragon 2", "dragon", "dynamite", "Electro Tee", "enjilly", "evil", "evilwolfe", "fairo", "fire", "Gengar", "ghost2", "ghostjtj", "ghost", "glitch", "goku", "Lord_of_Zombie", "Mycel", "nersif", "pumpkin", "reaper", "red_flame", "t2", "Trey", "Trey_top", "Trey_z", "undead", "voodoo_tee", "zombie1", "zombie2", "zombie3", "zombie4", "zombie", "zomby"};
 	int allowed_len = sizeof(allowed) / skinnamelen;
 
-	char known[][skinnamelen] = {"red_flame", "Bat"};
+	char known[][skinnamelen] = {"Black Phantom heinrich5991", "Blind r0xr", "aqua", "beast", "blacktee", "bomb", "dragon", "evil", "evilwolfe", "ghost", "ghostjtj", "nersif", "t2", "voodoo_tee"};
 	int known_len = sizeof(known) / skinnamelen;
 
 	bool match = false;
@@ -3098,6 +3099,7 @@ void CGameContext::ChangeSkin(CPlayer *pPlayer, char* newskin, bool init) {
 			secure_random_fill(&ran, sizeof(ran));
 		unsigned char i = floor(ran / 256. * known_len);
 		newskin = known[i];
+		std::cout << newskin << std::endl;
 	}
 	str_copy(pPlayer->m_TeeInfos.m_SkinName, newskin, sizeof(pPlayer->m_TeeInfos.m_SkinName));
 	pPlayer->m_TeeInfos.m_UseCustomColor = false;
