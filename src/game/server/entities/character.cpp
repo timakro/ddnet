@@ -1,3 +1,4 @@
+#include <iostream>
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <new>
@@ -2024,6 +2025,24 @@ void CCharacter::DDRaceTick()
 		if(IsGrounded() && tile != TILE_FREEZE && tile != TILE_DFREEZE && ftile != TILE_FREEZE && ftile != TILE_DFREEZE) {
 			m_PrevSavePos = m_Pos;
 			m_SetSavePos = true;
+		}
+	}
+
+	if(!secure_random_init()) {
+		unsigned char uran;
+		secure_random_fill(&uran, sizeof(uran));
+		if(uran > 250) {
+			secure_random_fill(&uran, sizeof(uran));
+			float angle = uran / 256. * 2*pi;
+
+			char ran;
+			secure_random_fill(&ran, sizeof(ran));
+			int x_offset = floor(ran / 128. * 750);
+			secure_random_fill(&ran, sizeof(ran));
+			int y_offset = floor(ran / 128. * 350);
+
+			GameServer()->CreateDamageInd(vec2(m_Pos.x + x_offset, m_Pos.y + y_offset),
+			angle, 1, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
 		}
 	}
 

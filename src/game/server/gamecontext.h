@@ -311,12 +311,7 @@ private:
 	static void ConRescue(IConsole::IResult *pResult, void *pUserData);
 	static void ConProtectedKill(IConsole::IResult *pResult, void *pUserData);
 
-	static void ConBat(IConsole::IResult *pResult, void *pUserData);
-	static void ConGhost(IConsole::IResult *pResult, void *pUserData);
-	static void ConPumpkin(IConsole::IResult *pResult, void *pUserData);
-	static void ConSkull(IConsole::IResult *pResult, void *pUserData);
-	static void ConWitch(IConsole::IResult *pResult, void *pUserData);
-	static void ConDoNe(IConsole::IResult *pResult, void *pUserData);
+	static void ConGuess(IConsole::IResult *pResult, void *pUserData);
 
 
 

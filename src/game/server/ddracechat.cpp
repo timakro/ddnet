@@ -1352,7 +1352,7 @@ void CGameContext::ConTopPoints(IConsole::IResult *pResult, void *pUserData)
 }
 #endif
 
-void CGameContext::ConBat(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConGuess(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	if (!CheckClientID(pResult->m_ClientID))
@@ -1360,122 +1360,135 @@ void CGameContext::ConBat(IConsole::IResult *pResult, void *pUserData)
 	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
 	if (!pPlayer)
 		return;
-	pSelf->SendChatTarget(pPlayer->GetCID(), "█▄                                                               ▄▟▌");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▐██▖       ▌              ▌       ▟██       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ███       █▄▟▌▐██▌       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▐██▌▜▟▟▘███              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▜██▖▀▘▟██▘              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ███████▌                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▝▜████▀                            ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                                   ▝█▛                                          ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▝                                                 ");
-}
-void CGameContext::ConGhost(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *) pUserData;
-	if (!CheckClientID(pResult->m_ClientID))
+
+	char guess[sizeof(pResult->GetString(0))];
+	if (pResult->NumArguments() == 0) {
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Guess words related to halloween!");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "This works a bit like hangman, you can");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "guess single characters or parts of a word.");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Hint: /guess at");
 		return;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if (!pPlayer)
+	} else {
+		str_copy(guess, pResult->GetString(0), sizeof(guess));
+	}
+
+	if(!str_comp_nocase(guess, "bat")) {
+		pSelf->SendChatTarget(pPlayer->GetCID(), "█▄                                                               ▄▟▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▐██▖       ▌              ▌       ▟██       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ███       █▄▟▌▐██▌       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▐██▌▜▟▟▘███              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▜██▖▀▘▟██▘              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                     ███████▌                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▝▜████▀                            ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                                   ▝█▛                                          ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▝                                                 ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Congrats, you guessed 'Bat'!");
 		return;
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▞▀▀▄                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗▘                            ▚              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▗▖▗▖       ▝▖       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▌█▌▐█              ▌       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▌▀              ▀              ▌       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▗▚       ▐▌▗▀       ▌       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▝▟▙▖       ▐▞       ▝▖");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▘▘▝▀▄▄▄▞       ");
-}
-void CGameContext::ConPumpkin(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *) pUserData;
-	if (!CheckClientID(pResult->m_ClientID))
+	} else if(!str_comp_nocase(guess, "ghost")) {
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▞▀▀▄                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗▘                            ▚              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▗▖▗▖       ▝▖       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▌█▌▐█              ▌       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▌▀              ▀              ▌       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▗▚       ▐▌▗▀       ▌       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▝▟▙▖       ▐▞       ▝▖");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▘▘▝▀▄▄▄▞       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Congrats, you guessed 'Ghost'!");
 		return;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if (!pPlayer)
+	} else if(!str_comp_nocase(guess, "pumpkin")) {
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▗▀▖                                   ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▌▞                                          ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▞▀▚▌▙▀▀▄                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▚       ▗▘▝       ▚       ▗▀▖       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▐▗▘       ▖       ▐              ▖       ▚▐       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌       ▟█▖▝       ▟█▖       ▌▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌       ▀▀▘▗       ▀▀▘       ▌▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌                     ▗█▙                            ▌▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▌              ▝▙                     ▗▛                     ▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▐▝▖       ▝▜██▀              ▞▐       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▚▞                                                 ▝▄▘       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▚▄▄▞▄▄▄▀                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Congrats, you guessed 'Pumpkin'! (use F1 or +show_chat)");
 		return;
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▗▀▖                                   ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                                          ▌▞                                          ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▞▀▚▌▙▀▀▄                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▚       ▗▘▝       ▚       ▗▀▖       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▐▗▘       ▖       ▐              ▖       ▚▐       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌       ▟█▖▝       ▟█▖       ▌▌");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌       ▀▀▘▗       ▀▀▘       ▌▌");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▌▌                     ▗█▙                            ▌▌");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▌              ▝▙                     ▗▛                     ▌");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▐▝▖       ▝▜██▀              ▞▐       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▚▞                                                 ▝▄▘       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▚▄▄▞▄▄▄▀                     ");
-}
-void CGameContext::ConSkull(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *) pUserData;
-	if (!CheckClientID(pResult->m_ClientID))
+	} else if(!str_comp_nocase(guess, "skull")) {
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▄███▙▖                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗███████▙              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▗█████████▙       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▟██████████▖");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "███████████▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "█▜████████▜▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "█▞█▙▄▜▚▄█▛▟▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▜▌▛▀▜▛█▀▀▌█▘");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▝▞                     ▟▖              ▝▞       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▗▌              ▗▛▙                     ▙       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▐▛▄▞▜       ▐▀▄▞█       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▝█▄▐█▗▐█▗▟▛       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▝▘▜████▘▀              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▐▐▌█▐       ▌              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▗▗▖▄▗       ▌              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▟▟▙█▟▞                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▀███▛▘                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Congrats, you guessed 'Skull'! (use F1 or +show_chat)");
 		return;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if (!pPlayer)
+	} else if(!str_comp_nocase(guess, "witch")) {
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▄█▙▖                                          ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▛▜███▙                                   ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                            ▜███▌▗▖              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                            ▟████▗█              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗       ██████▘              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▐▙█████▙       ▗       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▛██████▞▞       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▚▜███████▚▘");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▘▚▚▜███▚▚▘▘");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗▟▙▚▟██▌       ▘              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▜██████                            ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▜█████                            ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▄▟█▙▝████▄█▀▘");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▝▜█▛▀▜██▛                            ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                                   ▛       ▛                                   ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Congrats, you guessed 'Witch'! (use F1 or +show_chat)");
 		return;
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▄███▙▖                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗███████▙              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▗█████████▙       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▟██████████▖");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "███████████▌");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "█▜████████▜▌");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "█▞█▙▄▜▚▄█▛▟▌");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▜▌▛▀▜▛█▀▀▌█▘");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▝▞                     ▟▖              ▝▞       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▗▌              ▗▛▙                     ▙       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▐▛▄▞▜       ▐▀▄▞█       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▝█▄▐█▗▐█▗▟▛       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▝▘▜████▘▀              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▐▐▌█▐       ▌              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▗▗▖▄▗       ▌              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▟▟▙█▟▞                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▀███▛▘                     ");
-}
-void CGameContext::ConWitch(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *) pUserData;
-	if (!CheckClientID(pResult->m_ClientID))
+	} else if(!str_comp_nocase(guess, "megaman")) {
+		pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▗▀▙▖                            ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▙▞       ▝▖                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▄▘              ▚                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▖▄              ▐                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▘▀              ▙                     ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▀▞▀▘▞       ▀▖       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▗▘       ▞▀▀       ▖       ▚       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▐       ▜▌                     █▘▐       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▝▄▞▌                     ▛▄▞       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "              ▞              ▖       ▝▖              ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▗▞▘       ▞▝▖       ▀▄       ");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "▙▄▄▄▌       ▙▄▄▄▌");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Congrats, you guessed 'Megaman'! (use F1 or +show_chat)");
+		pSelf->SendChatTarget(pPlayer->GetCID(), "I know, not really related to halloween :P");
 		return;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if (!pPlayer)
-		return;
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▄█▙▖                                          ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▛▜███▙                                   ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                            ▜███▌▗▖              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                            ▟████▗█              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗       ██████▘              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▐▙█████▙       ▗       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▝▛██████▞▞       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▚▜███████▚▘");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▘▚▚▜███▚▚▘▘");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▗▟▙▚▟██▌       ▘              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▜██████                            ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▜█████                            ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▄▟█▙▝████▄█▀▘");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▝▜█▛▀▜██▛                            ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                                   ▛       ▛                                   ");
-}
-void CGameContext::ConDoNe(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *) pUserData;
-	if (!CheckClientID(pResult->m_ClientID))
-		return;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if (!pPlayer)
-		return;
-	pSelf->SendChatTarget(pPlayer->GetCID(), "                     ▗▀▙▖                            ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▗▙▞       ▝▖                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▄▘              ▚                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▖▄              ▐                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▌▘▀              ▙                     ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "       ▞▀▞▀▘▞       ▀▖       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▗▘       ▞▀▀       ▖       ▚       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▐       ▜▌                     █▘▐       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▝▄▞▌                     ▛▄▞       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "              ▞              ▖       ▝▖              ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▗▞▘       ▞▝▖       ▀▄       ");
-	pSelf->SendChatTarget(pPlayer->GetCID(), "▙▄▄▄▌       ▙▄▄▄▌");
+	}
+
+	char word[][8] = {"Bat", "Ghost", "Pumpkin", "Skull", "Witch", "Megaman"};
+	bool match[6] = {false};
+	int matches = 0;
+	for(int i = 0; i < 6; i++) {
+		char* found = (char*)str_find_nocase(word[i], guess);
+		if(found) {
+			int start = found - word[i];
+			mem_copy(word[i], "________", start);
+			int stop = start + str_length(guess);
+			mem_copy(word[i]+stop, "________", str_length(word[i])-stop);
+			match[i] = true;
+			matches++;
+		}
+	}
+	if(matches == 1)
+		pSelf->SendChatTarget(pPlayer->GetCID(), "Found 1 word that contains your guess:");
+	else {
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "Found %d words that contain you guess:", matches);
+		pSelf->SendChatTarget(pPlayer->GetCID(), aBuf);
+	}
+	for(int i = 0; i < 6; i++) {
+		if(match[i])
+			pSelf->SendChatTarget(pPlayer->GetCID(), word[i]);
+	}
 }
